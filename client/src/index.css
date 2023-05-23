@@ -1,0 +1,20 @@
+@import 'normalize.css';
+
+:root {
+    --header-height: 5.5rem;
+    --header-padding-top: 1.5rem;
+    --header-padding-x: 2.75rem;
+    --border-color: #eae8e4;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+}
+
+@font-face {
+    font-family: 'futura-pt-light';
+    src: local('futura-pt'), url(./fonts/futura-pt/FuturaPTLight.otf) format('opentype');
+}
