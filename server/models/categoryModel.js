@@ -13,12 +13,27 @@ const categorySchema = new mongoose.Schema(
             required: true,
             trim: true,
         },
-        video: {
-            type: String,
+        videos: {
+            desktop_tablet: [
+                {
+                    name: String,
+                    url: String,
+                },
+            ],
+            mobile: [
+                {
+                    name: String,
+                    url: String,
+                },
+            ],
         },
-        image: {
-            type: String,
-        },
+
+        images: [
+            {
+                name: String,
+                type: String,
+            },
+        ],
     },
     { timestamps: true },
 );

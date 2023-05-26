@@ -23,60 +23,23 @@ import {
     TablePagination,
 } from '@mui/material';
 // components
+import Label from '../../components/label';
 // import Label from '../../../components/label';
 import Iconify from '../../components/iconify';
 // import Scrollbar from '../components/scrollbar';
 // sections
-import { EnhancedTableHead, UserListToolbar } from '../../sections/@dashboard/user';
+import { EnhancedTableHead, EnhancedTableToolbar, UserListToolbar } from '../../sections/@dashboard/user';
 
 // ----------------------------------------------------------------------
 
 const headCells = [
-    // {
-    //     id: 'name',
-    //     numeric: false,
-    //     alignRight: false,
-    //     disablePadding: true,
-    //     label: 'Name',
-    // },
-    // {
-    //     id: 'role',
-    //     numeric: true,
-    //     alignRight: false,
-    //     disablePadding: false,
-    //     label: 'Role',
-    // },
-    // {
-    //     id: 'isVerified',
-    //     alignRight: false,
-    //     disablePadding: false,
-    //     label: 'Verified',
-    // },
-    // {
-    //     id: 'status',
-    //     alignRight: false,
-    //     disablePadding: false,
-    //     label: 'Status',
-    // },
-    // {
-    //     id: '',
-    //     disablePadding: false,
-    // },
     { id: 'name', numeric: false, label: 'Name', alignRight: false },
+    { id: 'company', numeric: false, label: 'Company', alignRight: false },
     { id: 'role', numeric: false, label: 'Role', alignRight: false },
     { id: 'isVerified', numeric: false, label: 'Verified', alignRight: false },
     { id: 'status', numeric: false, label: 'Status', alignRight: false },
-    { id: '', label: '' },
-    { id: 'action' },
+    { id: '' },
 ];
-
-// const TABLE_HEAD = [
-//     { id: 'name', label: 'Name', alignRight: false },
-//     { id: 'role', label: 'Role', alignRight: false },
-//     { id: 'isVerified', label: 'Verified', alignRight: false },
-//     { id: 'status', label: 'Status', alignRight: false },
-//     { id: '' },
-// ];
 
 // ----------------------------------------------------------------------
 
@@ -210,9 +173,9 @@ export default function UserPage() {
 
     return (
         <>
-            {/* <Helmet>
+            <Helmet>
                 <title> User | Minimal UI </title>
-            </Helmet> */}
+            </Helmet>
 
             <Container>
                 <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
@@ -225,11 +188,11 @@ export default function UserPage() {
                 </Stack>
 
                 <Card>
-                    {/* <UserListToolbar
+                    <EnhancedTableToolbar
                         numSelected={selected.length}
                         filterName={filterName}
                         onFilterName={handleFilterByName}
-                    /> */}
+                    />
 
                     {/* <Scrollbar> */}
                     <TableContainer sx={{ minWidth: 800 }}>
@@ -281,11 +244,9 @@ export default function UserPage() {
                                                 <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
 
                                                 <TableCell align="left">
-                                                    {/*
                                                     <Label color={(status === 'banned' && 'error') || 'success'}>
                                                         {sentenceCase(status)}
                                                     </Label>
-                                                    */}
                                                 </TableCell>
 
                                                 <TableCell align="right">

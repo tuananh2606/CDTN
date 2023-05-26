@@ -59,7 +59,7 @@ const StyledSearch = styled.div`
         display: none;
     } */
     .search-container {
-        width: calc(100% - 4rem);
+        width: 100%;
         height: 88px;
         padding: 0 2rem;
         display: flex;
