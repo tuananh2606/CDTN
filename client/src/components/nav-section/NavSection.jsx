@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
 import { NavLink as RouterLink } from 'react-router-dom';
-import styled from 'styled-components';
-import { ThemeProvider } from 'styled-components';
 // @mui
+import { styled } from '@mui/material/styles';
 import { Box, List, ListItemText, ListItemIcon, ListItemButton } from '@mui/material';
 
 // ----------------------------------------------------------------------
@@ -33,7 +32,17 @@ function NavItem({ item }) {
     const { title, path, icon, info } = item;
 
     return (
-        <StyledNavItem component={RouterLink} to={path}>
+        <StyledNavItem
+            component={RouterLink}
+            to={path}
+            sx={{
+                '&.active': {
+                    color: 'text.primary',
+                    bgcolor: 'action.selected',
+                    fontWeight: 'fontWeightBold',
+                },
+            }}
+        >
             <StyledNavItemIcon>{icon && icon}</StyledNavItemIcon>
 
             <ListItemText disableTypography primary={title} />
@@ -43,23 +52,20 @@ function NavItem({ item }) {
     );
 }
 
-const StyledNavItem = styled(ListItemButton)`
-    height: 48px;
-    position: relative;
-    text-transform: capitalize;
-    color: #ccc;
-    border-radius: 12px;
-    &:active {
-        color: #212b36;
-        background-color: rgba(145, 158, 171, 0.16);
-        font-weight: 700;
-    }
-`;
-const StyledNavItemIcon = styled(ListItemIcon)`
-    width: 22px;
-    height: 22px;
-    color: inherit;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-`;
+const StyledNavItem = styled((props) => <ListItemButton disableGutters {...props} />)(({ theme }) => ({
+    ...theme.typography.body2,
+    height: 48,
+    position: 'relative',
+    textTransform: 'capitalize',
+    color: theme.palette.text.secondary,
+    borderRadius: theme.shape.borderRadius,
+}));
+
+const StyledNavItemIcon = styled(ListItemIcon)({
+    width: 22,
+    height: 22,
+    color: 'inherit',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+});
