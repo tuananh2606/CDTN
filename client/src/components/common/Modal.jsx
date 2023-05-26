@@ -5,8 +5,12 @@ const Modal = ({ title, children, ...props }) => {
     return (
         <Container {...props}>
             <ModalTitle>
-                <h2>{title}</h2>
-                <IoCloseOutline size={32} className="close-btn" onClick={() => props.setToggle(false)} />
+                <h2>
+                    <span>{title}</span>
+                </h2>
+                <button className="close-btn">
+                    <IoCloseOutline size={22} onClick={() => props.setToggle(false)} />
+                </button>
             </ModalTitle>
             <ModalContent>{children}</ModalContent>
         </Container>
@@ -16,7 +20,6 @@ const Modal = ({ title, children, ...props }) => {
 export default Modal;
 
 const Container = styled.div`
-    box-sizing: border-box;
     position: fixed;
     inset: 0;
     z-index: 101;
@@ -42,19 +45,25 @@ const Container = styled.div`
 `;
 
 const ModalTitle = styled.div`
+    box-sizing: border-box;
+    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
     box-shadow: 0px 1px #eae8e4;
     height: 4.5rem;
-    h2 {
+    span {
+        font-size: 1.75rem;
         width: 100%;
-        padding: 0 2.5rem;
+        padding: 0 2rem;
     }
     .close-btn {
         height: 100%;
-        padding: 0 1.5rem;
+        width: 4.5rem;
+        border: none;
+        background-color: transparent;
         box-shadow: -1px 1px #eae8e4;
+        padding: 1rem 1rem;
         /* border-left: 2px solid #eae8e4; */
         cursor: pointer;
         &:hover {

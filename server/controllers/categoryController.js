@@ -4,9 +4,8 @@ const slugify = require('slugify');
 // Get All Category
 exports.getAllCategories = async (req, res) => {
     try {
-        const categories = await Category.find({});
-        const categoryList = createCategories(categories);
-        res.status(200).json({ success: true, categoryList });
+        const categories = await Category.find();
+        res.status(200).json({ success: true, categories });
     } catch (error) {
         res.status(500).json(error);
     }
@@ -17,11 +16,12 @@ exports.createCategory = async (req, res) => {
         const categoryObj = {
             name: req.body.name,
             slug: slugify(req.body.name),
+            videos: req.body.videos,
         };
 
-        if (req.body.parentId) {
-            categoryObj.parentId = req.body.parentId;
-        }
+        // if (req.body.parentId) {
+        //     categoryObj.parentId = req.body.parentId;
+        // }
         const cat = new Category(categoryObj);
         const savedCat = await cat.save();
         res.status(200).json(savedCat);
