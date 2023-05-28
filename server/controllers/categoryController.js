@@ -17,6 +17,7 @@ exports.createCategory = async (req, res) => {
             name: req.body.name,
             slug: slugify(req.body.name),
             videos: req.body.videos,
+            images: req.body.images,
         };
 
         // if (req.body.parentId) {

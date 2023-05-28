@@ -31,7 +31,7 @@ const categorySchema = new mongoose.Schema(
         images: [
             {
                 name: String,
-                type: String,
+                url: String,
             },
         ],
     },

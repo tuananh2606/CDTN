@@ -28,7 +28,7 @@ import Label from '../../components/label';
 import Iconify from '../../components/iconify';
 // import Scrollbar from '../components/scrollbar';
 // sections
-import { EnhancedTableHead, EnhancedTableToolbar, UserListToolbar } from '../../sections/@dashboard/user';
+import { EnhancedTableHead, EnhancedTableToolbar } from '../../sections/@dashboard/user';
 
 // ----------------------------------------------------------------------
 

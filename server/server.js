@@ -1,7 +1,8 @@
 const express = require('express');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
-var bodyParse = require('body-parser');
+const bodyParse = require('body-parser');
+const cors = require('cors');
 const connectDatabase = require('./config/database');
 
 const app = express();
@@ -11,15 +12,20 @@ const PORT = process.env.PORT || 1000;
 
 connectDatabase();
 
+app.use(cors());
 app.use(bodyParse.json({ limit: '50mb' }));
 app.use(morgan('common'));
 
 //ROUTES
 const product = require('./routes/productRoute');
 const category = require('./routes/categoryRoute');
+const authRoute = require('./routes/authRoute');
+const user = require('./routes/userRoute');
 
 app.use('/v1/product', product);
 app.use('/v1/category', category);
+app.use('/v1/auth', authRoute);
+app.use('/v1/user', user);
 
 app.get('/api', (req, res) => {
     res.json({ message: 'Hello from server!' });

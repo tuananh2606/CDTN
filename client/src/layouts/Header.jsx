@@ -92,7 +92,6 @@ const Header = () => {
                                 <span className="label-up">Menu</span>
                                 <span className="label-up">Close</span>
                             </LabelMenuHamburger>
-                            {/* <span className={`hamburger-icon-text ${navToggle ? 'active' : 'inactive'}`}>Menu</span> */}
                         </StyledIconButton>
                     </div>
                     {/* <HeaderLogo src="logo-test.png" alt="Logo" /> */}
@@ -108,10 +107,6 @@ const Header = () => {
                     <IconContext.Provider value={{ className: 'nav-right__icons' }}>
                         <div className="nav--right">
                             <CiSearch size={22} onClick={() => setSearchToggle(!searchToggle)} />
-
-                            <a style={{ margin: '0 0,5rem' }} href="#">
-                                Sign In
-                            </a>
                             <CiStar size={24} />
                             <BsHandbag size={18} onClick={() => setUtilityToggle(!utilityToggle)} />
                         </div>

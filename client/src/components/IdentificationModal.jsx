@@ -1,8 +1,9 @@
 import styled from 'styled-components';
 import Button from '@mui/material/Button';
-import TextInput from './common/TextInput';
+import InputField from './common/InputField';
 import { Link } from 'react-router-dom';
 import { forwardRef } from 'react';
+import { Form, Formik } from 'formik';
 
 import Modal from './common/Modal';
 import useOnClickOutside from '../hooks/useCheckClickedOutside';
@@ -13,30 +14,32 @@ const IdentificationModal = ({ ...props }, ref) => {
             <Modal title="IDENTIFICATION" {...props}>
                 <SectionLoginForm>
                     <TitleSection>I ALREADY HAVE AN ACCOUNT</TitleSection>
-                    <form autoComplete="off">
-                        <TextInput
-                            id="email"
-                            name="email"
-                            type="email"
-                            height={48}
-                            labelCustom="Login"
-                            autoComplete="email"
-                            isLabelPosition
-                        />
-                        <TextInput
-                            id="password"
-                            name="password"
-                            type="password"
-                            height={48}
-                            labelCustom="Password"
-                            autoComplete="off"
-                            isLabelPosition
-                        />
-                        <a href="#">
-                            <small>Forgot your password?</small>
-                        </a>
-                        <StyledButton>LOGIN</StyledButton>
-                    </form>
+                    <Formik>
+                        <form autoComplete="off">
+                            <InputField
+                                id="email"
+                                name="email"
+                                type="email"
+                                height={48}
+                                labelCustom="Login"
+                                autoComplete="email"
+                                isLabelPosition
+                            />
+                            <InputField
+                                id="password"
+                                name="password"
+                                type="password"
+                                height={48}
+                                labelCustom="Password"
+                                autoComplete="off"
+                                isLabelPosition
+                            />
+                            <a href="#">
+                                <small>Forgot your password?</small>
+                            </a>
+                            <StyledButton>LOGIN</StyledButton>
+                        </form>
+                    </Formik>
                 </SectionLoginForm>
                 <SeparatorModal />
                 <Register>

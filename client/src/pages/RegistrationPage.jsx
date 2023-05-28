@@ -1,12 +1,14 @@
 import styled from 'styled-components';
 import { useState, Fragment } from 'react';
-import { Stepper, Step, StepLabel, StepButton, Box, Button, Stack, Typography, CircularProgress } from '@mui/material';
+import * as Yup from 'yup';
+import { Box, Button, CircularProgress } from '@mui/material';
+import { Form, Formik } from 'formik';
 
-import SignUpInfoForm1 from '../components/forms/registration/SignUpInfoForm1';
-import SignUpInfoForm2 from '../components/forms/registration/SignUpInfoForm2';
-import AccountActivationForm from '../components/forms/registration/AccountActivationForm';
+import validationSchema from '../components/forms/registration/FormModels/validationSchema';
+import { SignUpInfoForm1, SignUpInfoForm2, AccountActivationForm } from '../components/forms/registration';
 
 const steps = ['Registration Information', 'Registration Information', 'ACCOUNT ACTIVATION'];
+
 function _renderStepContent(step) {
     switch (step) {
         case 0:
@@ -19,6 +21,7 @@ function _renderStepContent(step) {
             return <div>Not Found</div>;
     }
 }
+
 function _renderStep(step) {
     switch (step) {
         case 0:
@@ -34,23 +37,33 @@ function _renderStep(step) {
 
 const Registration = () => {
     const [activeStep, setActiveStep] = useState(0);
+    const currentValidationSchema = validationSchema[activeStep];
     const totalSteps = () => {
         return steps.length;
     };
 
-    const isLastStep = () => {
-        return activeStep === totalSteps() - 1;
-    };
+    const isLastStep = activeStep === steps.length - 1;
 
-    const handleNext = () => {
-        const newActiveStep =
-            isLastStep() && !allStepsCompleted()
-                ? // It's the last step, but not all steps have been completed,
-                  // find the first step that has been completed
-                  steps.findIndex((step, i) => !(i in completed))
-                : activeStep + 1;
-        setActiveStep(newActiveStep);
-    };
+    function _sleep(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    async function _submitForm(values, actions) {
+        await _sleep(1000);
+        alert(JSON.stringify(values, null, 2));
+        actions.setSubmitting(false);
+        setActiveStep(activeStep + 1);
+    }
+
+    function _handleSubmit(values, actions) {
+        if (isLastStep) {
+            _submitForm(values, actions);
+        } else {
+            setActiveStep(activeStep + 1);
+            actions.setTouched({});
+            actions.setSubmitting(false);
+        }
+    }
 
     const handleBack = () => {
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
@@ -75,22 +88,44 @@ const Registration = () => {
                             {_renderStep(activeStep)}
                             <span> {`(${activeStep + 1 + '/' + totalSteps() + ')'}`}</span>
                         </FormLabel>
-                        {_renderStepContent(activeStep)}
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                flexDirection: 'row',
-                                pt: 2,
+                        <Formik
+                            initialValues={{
+                                firstName: '',
+                                lastName: '',
+                                email: '',
+                                password: '',
+                                confirmedPassword: '',
+                                acticationCode: '',
                             }}
+                            validationSchema={currentValidationSchema}
+                            onSubmit={_handleSubmit}
                         >
-                            <Button color="inherit" disabled={activeStep === 0} onClick={handleBack} sx={{ mr: 1 }}>
-                                Back
-                            </Button>
-                            <Box sx={{ flex: '1 1 auto' }} />
-                            <StyledButton onClick={handleNext} sx={{ mr: 1 }}>
-                                Next
-                            </StyledButton>
-                        </Box>
+                            {({ isSubmitting }) => (
+                                <Form>
+                                    {_renderStepContent(activeStep)}
+                                    <Box
+                                        sx={{
+                                            display: 'flex',
+                                            flexDirection: 'row',
+                                            pt: 2,
+                                        }}
+                                    >
+                                        <Button
+                                            color="inherit"
+                                            disabled={activeStep === 0}
+                                            onClick={handleBack}
+                                            sx={{ mr: 1 }}
+                                        >
+                                            Back
+                                        </Button>
+                                        <Box sx={{ flex: '1 1 auto' }} />
+                                        <StyledButton disabled={isSubmitting} type="submit" sx={{ mr: 1 }}>
+                                            {isLastStep ? 'Finish' : 'Next'}
+                                        </StyledButton>
+                                    </Box>
+                                </Form>
+                            )}
+                        </Formik>
                     </RegistrationForm>
                 </RegistrationWrapper>
                 <SocialWrapper>
