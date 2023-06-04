@@ -17,7 +17,7 @@ const HomePage = () => {
     if (isLoading) return 'Loading...';
     if (error) return 'An error has occurred: ' + error.message;
 
-    const videos = data?.categories[0].videos;
+    const videos = data?.categories?.[0].videos || [];
 
     const imgs = [
         'http://media.gucci.com/content/DarkGray_ProductPush_Standard_700x700/1681494334/ProductPush_67579710ODT5467-april17-01_001_Light.jpg',
@@ -26,7 +26,10 @@ const HomePage = () => {
     ];
     return (
         <>
-            <HeroVideo id="player1" url={`${size.width > 786 ? videos.desktop_tablet[0].url : videos.mobile[0].url}`} />
+            <HeroVideo
+                id="player1"
+                url={`${size.width > 786 ? videos?.desktop_tablet?.[0].url : videos?.mobile?.[0].url}`}
+            />
             <StyledWrapperCaroseul>
                 <Carousel imgs={imgs} pagination={false} isCustom={false} />
             </StyledWrapperCaroseul>
