@@ -16,6 +16,7 @@ const Carousel = (props) => {
 
     const swiperNextButtonRef = useRef(null);
     const swiperPrevButtonRef = useRef(null);
+    console.log(imgs);
     return (
         <>
             <Wrapper>
@@ -40,9 +41,9 @@ const Carousel = (props) => {
                         return (
                             <SwiperSlide key={idx}>
                                 {!isProduct ? (
-                                    <StyledImage src={img} alt="Anh" />
+                                    <StyledImage src={img.url} alt="Anh" />
                                 ) : (
-                                    <StyledProductImage src={img} alt="Anh" slidesPerView={slidesPerView} />
+                                    <StyledProductImage src={img.url} alt="Anh" slidesPerView={slidesPerView} />
                                 )}
                             </SwiperSlide>
                         );

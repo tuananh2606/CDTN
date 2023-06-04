@@ -1,44 +1,75 @@
 import styled from 'styled-components';
 import Button from '@mui/material/Button';
 import InputField from './common/InputField';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { forwardRef } from 'react';
 import { Form, Formik } from 'formik';
 
 import Modal from './common/Modal';
 import useOnClickOutside from '../hooks/useCheckClickedOutside';
+import { loginUser } from '../redux/apiRequest';
+import { useDispatch, useSelector } from 'react-redux';
 
 const IdentificationModal = ({ ...props }, ref) => {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const _handleSubmit = (values, { setSubmitting }) => {
+        setTimeout(() => {
+            const user = {
+                email: values.email,
+                password: values.password,
+            };
+            loginUser(user, dispatch, navigate);
+            setSubmitting(false);
+        }, 400);
+    };
+
     return (
         <div id="modal-container" ref={ref}>
             <Modal title="IDENTIFICATION" {...props}>
                 <SectionLoginForm>
                     <TitleSection>I ALREADY HAVE AN ACCOUNT</TitleSection>
-                    <Formik>
-                        <form autoComplete="off">
-                            <InputField
-                                id="email"
-                                name="email"
-                                type="email"
-                                height={48}
-                                labelCustom="Login"
-                                autoComplete="email"
-                                isLabelPosition
-                            />
-                            <InputField
-                                id="password"
-                                name="password"
-                                type="password"
-                                height={48}
-                                labelCustom="Password"
-                                autoComplete="off"
-                                isLabelPosition
-                            />
-                            <a href="#">
-                                <small>Forgot your password?</small>
-                            </a>
-                            <StyledButton>LOGIN</StyledButton>
-                        </form>
+                    <Formik
+                        initialValues={{ email: '', password: '' }}
+                        validate={(values) => {
+                            const errors = {};
+                            if (!values.email) {
+                                errors.email = 'Required';
+                            } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)) {
+                                errors.email = 'Invalid email address';
+                            }
+                            return errors;
+                        }}
+                        onSubmit={_handleSubmit}
+                    >
+                        {({ isSubmitting }) => (
+                            <Form>
+                                <InputField
+                                    id="email"
+                                    name="email"
+                                    type="email"
+                                    height={48}
+                                    labelCustom="Login"
+                                    autoComplete="email"
+                                    isLabelPosition
+                                />
+                                <InputField
+                                    id="password"
+                                    name="password"
+                                    type="password"
+                                    height={48}
+                                    labelCustom="Password"
+                                    autoComplete="off"
+                                    isLabelPosition
+                                />
+                                <a href="#">
+                                    <small>Forgot your password?</small>
+                                </a>
+                                <StyledButton type="submit" disabled={isSubmitting}>
+                                    LOGIN
+                                </StyledButton>
+                            </Form>
+                        )}
                     </Formik>
                 </SectionLoginForm>
                 <SeparatorModal />

@@ -8,8 +8,8 @@ const Modal = ({ title, children, ...props }) => {
                 <h2>
                     <span>{title}</span>
                 </h2>
-                <button className="close-btn">
-                    <IoCloseOutline size={22} onClick={() => props.setToggle(false)} />
+                <button className="close-btn" onClick={() => props.setToggle(false)}>
+                    <IoCloseOutline size={22} />
                 </button>
             </ModalTitle>
             <ModalContent>{children}</ModalContent>
@@ -63,7 +63,6 @@ const ModalTitle = styled.div`
         border: none;
         background-color: transparent;
         box-shadow: -1px 1px #eae8e4;
-        padding: 1rem 1rem;
         /* border-left: 2px solid #eae8e4; */
         cursor: pointer;
         &:hover {

@@ -1,11 +1,13 @@
 import styled from 'styled-components';
-import { useState, Fragment } from 'react';
-import * as Yup from 'yup';
+import { useState } from 'react';
 import { Box, Button, CircularProgress } from '@mui/material';
 import { Form, Formik } from 'formik';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 
 import validationSchema from '../components/forms/registration/FormModels/validationSchema';
 import { SignUpInfoForm1, SignUpInfoForm2, AccountActivationForm } from '../components/forms/registration';
+import { registerUser } from '../redux/apiRequest';
 
 const steps = ['Registration Information', 'Registration Information', 'ACCOUNT ACTIVATION'];
 
@@ -38,6 +40,9 @@ function _renderStep(step) {
 const Registration = () => {
     const [activeStep, setActiveStep] = useState(0);
     const currentValidationSchema = validationSchema[activeStep];
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
     const totalSteps = () => {
         return steps.length;
     };
@@ -50,9 +55,13 @@ const Registration = () => {
 
     async function _submitForm(values, actions) {
         await _sleep(1000);
-        alert(JSON.stringify(values, null, 2));
+        const newUser = {
+            name: `${values.firstName} ${values.lastName}`,
+            email: values.email,
+            password: values.password,
+        };
+        registerUser(newUser, dispatch, navigate);
         actions.setSubmitting(false);
-        setActiveStep(activeStep + 1);
     }
 
     function _handleSubmit(values, actions) {

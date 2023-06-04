@@ -69,7 +69,7 @@ const FilterWrapper = styled.div`
 `;
 const FilterContent = styled.div`
     background-color: #fff;
-    width: calc(100% - 2rem);
+    width: 100%;
     min-height: 4rem;
     position: fixed !important;
     top: ${(props) => (props.direction === 'down' ? '-5.5rem' : '0')};

@@ -1,7 +1,9 @@
 const Category = require('../models/categoryModel');
 const slugify = require('slugify');
 
-// Get All Category
+// ADMIN DASHBOARD
+
+// Get All Categories
 exports.getAllCategories = async (req, res) => {
     try {
         const categories = await Category.find();
@@ -10,6 +12,17 @@ exports.getAllCategories = async (req, res) => {
         res.status(500).json(error);
     }
 };
+
+// Get Category
+exports.getCategory = async (req, res) => {
+    try {
+        const categories = await Category.find({ slug: req.params.slug }).exec();
+        res.status(200).json({ success: true, categories });
+    } catch (error) {
+        res.status(500).json(error);
+    }
+};
+
 //Create category
 exports.createCategory = async (req, res) => {
     try {

@@ -1,4 +1,9 @@
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { logoutUser } from '../../../../redux/apiRequest';
+import { logoutSuccess } from '../../../../redux/authSlice';
+import { useNavigate } from 'react-router-dom';
+import { createAxios } from '../../../../utils/http';
 // @mui
 import { alpha } from '@mui/material/styles';
 import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton, Popover } from '@mui/material';
@@ -26,12 +31,21 @@ const MENU_OPTIONS = [
 
 export default function AccountPopover() {
     const [open, setOpen] = useState(null);
+    const user = useSelector((state) => state.auth.login.currentUser);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    let axiosJWT = createAxios(user, dispatch, logoutSuccess);
 
     const handleOpen = (event) => {
         setOpen(event.currentTarget);
     };
 
     const handleClose = () => {
+        setOpen(null);
+    };
+
+    const handleLogout = () => {
+        logoutUser(dispatch, user?.accessToken, navigate, axiosJWT);
         setOpen(null);
     };
 
@@ -97,7 +111,7 @@ export default function AccountPopover() {
 
                 <Divider sx={{ borderStyle: 'dashed' }} />
 
-                <MenuItem onClick={handleClose} sx={{ m: 1 }}>
+                <MenuItem onClick={handleLogout} sx={{ m: 1 }}>
                     Logout
                 </MenuItem>
             </Popover>

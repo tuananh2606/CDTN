@@ -17,8 +17,8 @@ export default [
         confirmedPassword: Yup.string()
             .required('Password confirmation is required')
             .oneOf([Yup.ref('password'), null], 'This password does not match the above'),
-        firstName: Yup.string().required('First name is required').min(4, 'Must be 4 characters or more'),
-        lastName: Yup.string().required('Last name is required').min(4, 'Must be 4 characters or more'),
+        firstName: Yup.string().required('First name is required').min(2, 'Must be 4 characters or more'),
+        lastName: Yup.string().required('Last name is required').min(2, 'Must be 4 characters or more'),
     }),
     Yup.object().shape({
         acticationCode: Yup.string().required('Actication code is required').length(6, 'Must be 6 characters'),

@@ -1,7 +1,13 @@
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { loginSuccess } from '../../redux/authSlice';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryString } from '../../hooks';
+import { createAxios } from '../../utils/http';
+import axios from 'axios';
 // @mui
 import {
     Card,
@@ -30,44 +36,19 @@ import Iconify from '../../components/iconify';
 // sections
 import { EnhancedTableHead, EnhancedTableToolbar } from '../../sections/@dashboard/user';
 
+import { getAllUsers } from '../../react-query/apis';
+import adminApi from '../../apis/adminApi';
+import DialogComponent from '../../components/common/Dialog';
 // ----------------------------------------------------------------------
 
 const headCells = [
     { id: 'name', numeric: false, label: 'Name', alignRight: false },
-    { id: 'company', numeric: false, label: 'Company', alignRight: false },
+    { id: 'email', numeric: false, label: 'Email', alignRight: false },
     { id: 'role', numeric: false, label: 'Role', alignRight: false },
     { id: 'isVerified', numeric: false, label: 'Verified', alignRight: false },
     { id: 'status', numeric: false, label: 'Status', alignRight: false },
     { id: '' },
 ];
-
-// ----------------------------------------------------------------------
-
-import { faker } from '@faker-js/faker';
-import { sample } from 'lodash';
-
-// ----------------------------------------------------------------------
-
-const USERLIST = [...Array(24)].map((_, index) => ({
-    id: faker.datatype.uuid(),
-    avatarUrl: `/assets/images/avatars/avatar_${index + 1}.jpg`,
-    name: faker.name.fullName(),
-    company: faker.company.name(),
-    isVerified: faker.datatype.boolean(),
-    status: sample(['active', 'banned']),
-    role: sample([
-        'Leader',
-        'Hr Manager',
-        'UI Designer',
-        'UX Designer',
-        'UI/UX Designer',
-        'Project Manager',
-        'Backend Developer',
-        'Full Stack Designer',
-        'Front End Developer',
-        'Full Stack Developer',
-    ]),
-}));
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -99,8 +80,50 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function UserPage() {
-    const [open, setOpen] = useState(null);
+    const user = useSelector((state) => state.auth.login.currentUser);
+    const dispatch = useDispatch();
+    const queryClient = useQueryClient();
 
+    const users = [
+        {
+            _id: 'b28d9ef5-0bc6-4e52-b17a-6e5689c9c956',
+            name: 'Matt Moore',
+            email: 'Johns Group',
+            verified: false,
+            status: 'active',
+            role: 'Admin',
+        },
+        {
+            _id: '55ccca36-5196-4faf-8f81-d5c734334ade',
+            name: 'Kate Daugherty',
+            company: 'Boehm - Dach',
+            verified: true,
+            status: 'active',
+            role: 'No',
+        },
+    ];
+
+    let axiosJWT = createAxios(user, dispatch, loginSuccess);
+    // const queryString = useQueryString();
+    // const pageQuery = Number(queryString.page) || 0;
+    const { isLoading, isError, data, error } = useQuery({
+        queryKey: ['users'],
+        queryFn: () => getAllUsers(axiosJWT, user?.accessToken, 1),
+        keepPreviousData: true,
+        initialData: () => users,
+    });
+
+    if (isLoading) {
+        return <span>Loading...</span>;
+    }
+
+    if (isError) {
+        return <span>Error: {error.message}</span>;
+    }
+
+    const [open, setOpen] = useState(null);
+    const [dialog, setDialog] = useState(false);
+    const [_idUser, setIdUser] = useState();
     const [page, setPage] = useState(0);
 
     const [order, setOrder] = useState('asc');
@@ -113,8 +136,9 @@ export default function UserPage() {
 
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
-    const handleOpenMenu = (event) => {
+    const handleOpenMenu = (event, _id) => {
         setOpen(event.currentTarget);
+        setIdUser(_id);
     };
 
     const handleCloseMenu = () => {
@@ -129,18 +153,18 @@ export default function UserPage() {
 
     const handleSelectAllClick = (event) => {
         if (event.target.checked) {
-            const newSelecteds = USERLIST.map((n) => n.name);
+            const newSelecteds = data.map((n) => n._id);
             setSelected(newSelecteds);
             return;
         }
         setSelected([]);
     };
 
-    const handleClick = (event, name) => {
-        const selectedIndex = selected.indexOf(name);
+    const handleClick = (event, _id) => {
+        const selectedIndex = selected.indexOf(_id);
         let newSelected = [];
         if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, name);
+            newSelected = newSelected.concat(selected, _id);
         } else if (selectedIndex === 0) {
             newSelected = newSelected.concat(selected.slice(1));
         } else if (selectedIndex === selected.length - 1) {
@@ -165,11 +189,39 @@ export default function UserPage() {
         setFilterName(event.target.value);
     };
 
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
 
-    const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
+    const filteredUsers = applySortFilter(data, getComparator(order, orderBy), filterName);
 
     const isNotFound = !filteredUsers.length && !!filterName;
+
+    const deleteUserMutation = useMutation({
+        mutationFn: (id) => adminApi.deleteUser(axiosJWT, user?.accessToken, id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['users'] });
+        },
+    });
+
+    // const updateUserMutation = useMutation({
+    //     mutationFn: (id) => adminApi.deleteUser(axiosJWT, user?.accessToken, id),
+    //     onSuccess: () => {
+    //         queryClient.invalidateQueries({ queryKey: ['users'] });
+    //     },
+    // });
+
+    const handleDelete = () => {
+        deleteUserMutation.mutate(_idUser);
+        setOpen(false);
+        setSelected([]);
+    };
+
+    const handleEditOpen = () => {
+        setDialog(true);
+    };
+
+    const handleEditClose = () => {
+        setDialog(false);
+    };
 
     return (
         <>
@@ -195,112 +247,121 @@ export default function UserPage() {
                     />
 
                     {/* <Scrollbar> */}
-                    <TableContainer sx={{ minWidth: 800 }}>
-                        <Table>
-                            <EnhancedTableHead
-                                order={order}
-                                orderBy={orderBy}
-                                headCells={headCells}
-                                rowCount={USERLIST.length}
-                                numSelected={selected.length}
-                                onRequestSort={handleRequestSort}
-                                onSelectAllClick={handleSelectAllClick}
-                            />
-                            <TableBody>
-                                {filteredUsers
-                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    .map((row) => {
-                                        const { id, name, role, status, company, avatarUrl, isVerified } = row;
-                                        const selectedUser = selected.indexOf(name) !== -1;
-
-                                        return (
-                                            <TableRow
-                                                hover
-                                                key={id}
-                                                tabIndex={-1}
-                                                role="checkbox"
-                                                selected={selectedUser}
-                                            >
-                                                <TableCell padding="checkbox">
-                                                    <Checkbox
-                                                        checked={selectedUser}
-                                                        onChange={(event) => handleClick(event, name)}
-                                                    />
-                                                </TableCell>
-
-                                                <TableCell component="th" scope="row" padding="none">
-                                                    <Stack direction="row" alignItems="center" spacing={2}>
-                                                        <Avatar alt={name} src={avatarUrl} />
-                                                        <Typography variant="subtitle2" noWrap>
-                                                            {name}
-                                                        </Typography>
-                                                    </Stack>
-                                                </TableCell>
-
-                                                <TableCell align="left">{company}</TableCell>
-
-                                                <TableCell align="left">{role}</TableCell>
-
-                                                <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
-
-                                                <TableCell align="left">
-                                                    <Label color={(status === 'banned' && 'error') || 'success'}>
-                                                        {sentenceCase(status)}
-                                                    </Label>
-                                                </TableCell>
-
-                                                <TableCell align="right">
-                                                    <IconButton size="large" color="inherit" onClick={handleOpenMenu}>
-                                                        <Iconify icon={'eva:more-vertical-fill'} />
-                                                    </IconButton>
-                                                </TableCell>
-                                            </TableRow>
-                                        );
-                                    })}
-                                {emptyRows > 0 && (
-                                    <TableRow style={{ height: 53 * emptyRows }}>
-                                        <TableCell colSpan={6} />
-                                    </TableRow>
-                                )}
-                            </TableBody>
-
-                            {isNotFound && (
+                    {!isLoading ? (
+                        <TableContainer sx={{ minWidth: 800 }}>
+                            <Table>
+                                <EnhancedTableHead
+                                    order={order}
+                                    orderBy={orderBy}
+                                    headCells={headCells}
+                                    rowCount={data.length}
+                                    numSelected={selected.length}
+                                    onRequestSort={handleRequestSort}
+                                    onSelectAllClick={handleSelectAllClick}
+                                />
                                 <TableBody>
-                                    <TableRow>
-                                        <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                                            <Paper
-                                                sx={{
-                                                    textAlign: 'center',
-                                                }}
-                                            >
-                                                <Typography variant="h6" paragraph>
-                                                    Not found
-                                                </Typography>
+                                    {filteredUsers
+                                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                        .map((row) => {
+                                            const { _id, name, role, status, email, avatarUrl, verified, admin } = row;
+                                            const selectedUser = selected.indexOf(_id) !== -1;
 
-                                                <Typography variant="body2">
-                                                    No results found for &nbsp;
-                                                    <strong>&quot;{filterName}&quot;</strong>.
-                                                    <br /> Try checking for typos or using complete words.
-                                                </Typography>
-                                            </Paper>
-                                        </TableCell>
-                                    </TableRow>
+                                            return (
+                                                <TableRow
+                                                    hover
+                                                    key={_id}
+                                                    tabIndex={-1}
+                                                    role="checkbox"
+                                                    selected={selectedUser}
+                                                >
+                                                    <TableCell padding="checkbox">
+                                                        <Checkbox
+                                                            checked={selectedUser}
+                                                            onChange={(event) => handleClick(event, _id)}
+                                                        />
+                                                    </TableCell>
+
+                                                    <TableCell component="th" scope="row" padding="none">
+                                                        <Stack direction="row" alignItems="center" spacing={2}>
+                                                            <Avatar alt={name} src={avatarUrl} />
+                                                            <Typography variant="subtitle2" noWrap>
+                                                                {name}
+                                                            </Typography>
+                                                        </Stack>
+                                                    </TableCell>
+
+                                                    <TableCell align="left">{email}</TableCell>
+
+                                                    <TableCell align="left">{admin ? 'Admin' : 'No'}</TableCell>
+
+                                                    <TableCell align="left">{verified ? 'Yes' : 'No'}</TableCell>
+
+                                                    <TableCell align="left">
+                                                        <Label color={(status === 'banned' && 'error') || 'success'}>
+                                                            {sentenceCase('test')}
+                                                        </Label>
+                                                    </TableCell>
+
+                                                    <TableCell align="right">
+                                                        <IconButton
+                                                            size="large"
+                                                            color="inherit"
+                                                            onClick={(e) => handleOpenMenu(e, _id)}
+                                                        >
+                                                            <Iconify icon={'eva:more-vertical-fill'} />
+                                                        </IconButton>
+                                                    </TableCell>
+                                                </TableRow>
+                                            );
+                                        })}
+                                    {emptyRows > 0 && (
+                                        <TableRow style={{ height: 53 * emptyRows }}>
+                                            <TableCell colSpan={6} />
+                                        </TableRow>
+                                    )}
                                 </TableBody>
-                            )}
-                        </Table>
-                    </TableContainer>
+
+                                {isNotFound && (
+                                    <TableBody>
+                                        <TableRow>
+                                            <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
+                                                <Paper
+                                                    sx={{
+                                                        textAlign: 'center',
+                                                    }}
+                                                >
+                                                    <Typography variant="h6" paragraph>
+                                                        Not found
+                                                    </Typography>
+
+                                                    <Typography variant="body2">
+                                                        No results found for &nbsp;
+                                                        <strong>&quot;{filterName}&quot;</strong>.
+                                                        <br /> Try checking for typos or using complete words.
+                                                    </Typography>
+                                                </Paper>
+                                            </TableCell>
+                                        </TableRow>
+                                    </TableBody>
+                                )}
+                            </Table>
+                        </TableContainer>
+                    ) : (
+                        <span>Loading....</span>
+                    )}
                     {/* </Scrollbar> */}
 
                     <TablePagination
                         rowsPerPageOptions={[5, 10, 25]}
                         component="div"
-                        count={USERLIST.length}
+                        count={data.length}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         onPageChange={handleChangePage}
                         onRowsPerPageChange={handleChangeRowsPerPage}
                     />
                 </Card>
+                {dialog && <DialogComponent open={dialog} onClose={handleEditClose} id={_idUser} />}
             </Container>
 
             <Popover
@@ -321,12 +382,12 @@ export default function UserPage() {
                     },
                 }}
             >
-                <MenuItem>
+                <MenuItem onClick={handleEditOpen}>
                     <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
                     Edit
                 </MenuItem>
 
-                <MenuItem sx={{ color: 'error.main' }}>
+                <MenuItem sx={{ color: 'error.main' }} onClick={() => handleDelete(selected[0])}>
                     <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
                     Delete
                 </MenuItem>

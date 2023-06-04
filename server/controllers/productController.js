@@ -1,20 +1,25 @@
 const Product = require('../models/productModel');
+const Category = require('../models/categoryModel');
 
 // Get All Products
 exports.getAllProducts = async (req, res) => {
     try {
         const products = await Product.find();
-        res.status(200).json({ success: true, products });
+        return res.status(200).json({ success: true, products });
     } catch (error) {
         res.status(500).json(error);
     }
 };
 
 //Get All Product By Category
-exports.getAllProductsByCategory = async (req, res) => {
+exports.getProductsByCategory = async (req, res) => {
     try {
-        res.send(req.params.category);
-    } catch (error) {}
+        const { slug } = await Category.findOne({ slug: req.query.category });
+        const products = await Product.find({ category: slug });
+        return res.status(200).json({ success: true, products });
+    } catch (error) {
+        res.status(500).json(error);
+    }
 };
 
 //Get Product Details

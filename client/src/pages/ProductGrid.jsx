@@ -1,21 +1,47 @@
 import styled from 'styled-components';
 import { useRef } from 'react';
+import { useParams } from 'react-router-dom';
+import { useQuery, useMutation, useQueryClient, QueryClient } from '@tanstack/react-query';
 
 import Carousel from '../components/Carousel';
 import useScrollDirection from '../hooks/useScrollDirection';
 import Filter from '../components/Filter';
+import productApis from '../apis/productApis';
 
 const ProductGrid = () => {
     const scrollDirection = useScrollDirection();
+    let { category } = useParams();
+    const queryClient = new QueryClient();
+    const { data, isLoading, error } = useQuery({
+        queryKey: ['products'],
+        queryFn: () => productApis.getProductsByCategory(category),
+    });
+    if (isLoading) return 'Loading...';
+    if (error) return 'An error has occurred: ' + error.message;
     const imgs = ['/images/product_test.png', '/images/frontview_img.png'];
+    console.log(data.products);
     return (
         <>
             <Filter direction={scrollDirection.direction} />
             <ContainerProductList>
-                <Card>
+                {data.products.map((product) => (
+                    <Card>
+                        <Carousel imgs={product.images} autoplay={false} pagination={false} loop isProduct isCustom />
+                        <ProductCardInfo>
+                            <ProductName>{product.name}</ProductName>
+                            <Variants>
+                                <ButtonChangeColor />
+                                <ButtonChangeColor />
+                                <ButtonChangeColor />
+                            </Variants>
+                        </ProductCardInfo>
+                        <a href="#" className="product-card__url" />
+                    </Card>
+                ))}
+                {/* <Card>
                     <Carousel imgs={imgs} autoplay={false} pagination={false} loop isProduct isCustom />
                     <ProductCardInfo>
-                        <ProductName>Capucines BB</ProductName>
+                        <ProductName>Test</ProductName>
                         <Variants>
                             <ButtonChangeColor />
                             <ButtonChangeColor />
@@ -23,72 +49,8 @@ const ProductGrid = () => {
                         </Variants>
                     </ProductCardInfo>
                     <a href="#" className="product-card__url" />
-                </Card>
-                <Card>
-                    <div>
-                        <Carousel imgs={imgs} autoplay={false} pagination isProduct />
-                        <ProductCardInfo>
-                            <ProductName>Capucines BB</ProductName>
-                            <Variants>
-                                <ButtonChangeColor />
-                                <ButtonChangeColor />
-                                <ButtonChangeColor />
-                            </Variants>
-                        </ProductCardInfo>
-                    </div>
-                </Card>
-                <Card>
-                    <div>
-                        <Carousel imgs={imgs} autoplay={false} pagination={false} isProduct={true}></Carousel>
-                        <ProductCardInfo>
-                            <ProductName>Capucines BB</ProductName>
-                            <Variants>
-                                <ButtonChangeColor />
-                                <ButtonChangeColor />
-                                <ButtonChangeColor />
-                            </Variants>
-                        </ProductCardInfo>
-                    </div>
-                </Card>
-                <Card>
-                    <div>
-                        <Carousel imgs={imgs} autoplay={false} pagination={false} isProduct={true}></Carousel>
-                        <ProductCardInfo>
-                            <ProductName>Capucines BB</ProductName>
-                            <Variants>
-                                <ButtonChangeColor />
-                                <ButtonChangeColor />
-                                <ButtonChangeColor />
-                            </Variants>
-                        </ProductCardInfo>
-                    </div>
-                </Card>
-                <Card>
-                    <div>
-                        <Carousel imgs={imgs} autoplay={false} pagination={false} isProduct={true}></Carousel>
-                        <ProductCardInfo>
-                            <ProductName>Capucines BB</ProductName>
-                            <Variants>
-                                <ButtonChangeColor />
-                                <ButtonChangeColor />
-                                <ButtonChangeColor />
-                            </Variants>
-                        </ProductCardInfo>
-                    </div>
-                </Card>
-                <Card>
-                    <div>
-                        <Carousel imgs={imgs} autoplay={false} pagination={false} isProduct={true}></Carousel>
-                        <ProductCardInfo>
-                            <ProductName>Capucines BB</ProductName>
-                            <Variants>
-                                <ButtonChangeColor />
-                                <ButtonChangeColor />
-                                <ButtonChangeColor />
-                            </Variants>
-                        </ProductCardInfo>
-                    </div>
-                </Card>
+                </Card> */}
+                ;
             </ContainerProductList>
         </>
     );

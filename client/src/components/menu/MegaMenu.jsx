@@ -2,14 +2,22 @@ import styled from 'styled-components';
 import { useImperativeHandle } from 'react';
 import { useState, useEffect, forwardRef } from 'react';
 import { IoCloseOutline, IoChevronForward } from 'react-icons/io5';
+import { useQuery, useMutation, QueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 
+import categoryApis from '../../apis/categoryApis';
 import LevelMenu from './LevelMenu';
 
 const MegaMenu = ({ navToggle, setNavToggle }, ref) => {
     // useImperativeHandle(ref, () => ({
     //     resetMenu,
     // }));
+
+    const queryClient = new QueryClient();
+    const { data, isLoading, error } = useQuery({
+        queryKey: ['categories'],
+        queryFn: () => categoryApis.getAllCategories(),
+    });
 
     const MENU_ITEMS = [
         {
@@ -36,7 +44,7 @@ const MegaMenu = ({ navToggle, setNavToggle }, ref) => {
         },
     ];
 
-    const [history, setHistory] = useState([{ data: MENU_ITEMS }]);
+    const [history, setHistory] = useState([{ data: data?.categories }]);
     const current = history[history.length - 1];
 
     const handleBack = () => {
@@ -53,7 +61,7 @@ const MegaMenu = ({ navToggle, setNavToggle }, ref) => {
             <NavigationWrapper navToggle={navToggle} ref={ref}>
                 {history.length > 1 && <LevelMenu title={current.title} onBack={handleBack} />}
                 <ul>
-                    {current.data.map((item, idx) => {
+                    {data?.categories?.map((item, idx) => {
                         const isParent = !!item.children;
                         return (
                             <NavItem key={idx}>
@@ -64,13 +72,16 @@ const MegaMenu = ({ navToggle, setNavToggle }, ref) => {
                                         }
                                     }}
                                 >
-                                    {history.length > 1 ? (
-                                        <Link to={item.to} onClick={resetMenu}>
-                                            {item?.title}
+                                    {/* {history.length > 1 ? (
+                                        <Link to={item.slug} onClick={resetMenu}>
+                                            {item?.name}
                                         </Link>
                                     ) : (
-                                        <span>{item?.title}</span>
-                                    )}
+                                        <span>{item?.name}</span>
+                                    )} */}
+                                    <Link to={'/' + item.slug} onClick={resetMenu}>
+                                        {item.name}
+                                    </Link>
 
                                     <IoChevronForward className="btn-direct-link" />
                                 </MegaMenuWrapper>

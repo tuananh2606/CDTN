@@ -1,7 +1,8 @@
 const express = require('express');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
-const bodyParse = require('body-parser');
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const connectDatabase = require('./config/database');
 
@@ -13,7 +14,15 @@ const PORT = process.env.PORT || 1000;
 connectDatabase();
 
 app.use(cors());
-app.use(bodyParse.json({ limit: '50mb' }));
+app.use(cookieParser());
+app.use(
+    bodyParser.urlencoded({
+        extended: true,
+    }),
+);
+app.use(bodyParser.json());
+
+// app.use(bodyParse.json({ limit: '50mb' }));
 app.use(morgan('common'));
 
 //ROUTES
