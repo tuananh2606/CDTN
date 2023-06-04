@@ -16,7 +16,7 @@ const Carousel = (props) => {
 
     const swiperNextButtonRef = useRef(null);
     const swiperPrevButtonRef = useRef(null);
-    console.log(imgs);
+
     return (
         <>
             <Wrapper>

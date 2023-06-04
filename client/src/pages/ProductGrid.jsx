@@ -1,7 +1,8 @@
 import styled from 'styled-components';
 import { useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient, QueryClient } from '@tanstack/react-query';
+import { useQuery, QueryClient } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
 
 import Carousel from '../components/Carousel';
 import useScrollDirection from '../hooks/useScrollDirection';
@@ -19,38 +20,27 @@ const ProductGrid = () => {
     if (isLoading) return 'Loading...';
     if (error) return 'An error has occurred: ' + error.message;
     const imgs = ['/images/product_test.png', '/images/frontview_img.png'];
-    console.log(data.products);
+    const link = (slug) => {
+        return `/${category}/${slug}`;
+    };
     return (
         <>
             <Filter direction={scrollDirection.direction} />
             <ContainerProductList>
-                {data.products.map((product) => (
-                    <Card>
+                {data.products?.map((product, idx) => (
+                    <Card key={idx}>
                         <Carousel imgs={product.images} autoplay={false} pagination={false} loop isProduct isCustom />
                         <ProductCardInfo>
                             <ProductName>{product.name}</ProductName>
                             <Variants>
-                                <ButtonChangeColor />
-                                <ButtonChangeColor />
-                                <ButtonChangeColor />
+                                {product.variation.colors.map((color, idx) => (
+                                    <ButtonChangeColor key={idx} color={color.name} />
+                                ))}
                             </Variants>
                         </ProductCardInfo>
-                        <a href="#" className="product-card__url" />
+                        <Link to={link(product.slug)} className="product-card__url" />
                     </Card>
                 ))}
-                {/* <Card>
-                    <Carousel imgs={imgs} autoplay={false} pagination={false} loop isProduct isCustom />
-                    <ProductCardInfo>
-                        <ProductName>Test</ProductName>
-                        <Variants>
-                            <ButtonChangeColor />
-                            <ButtonChangeColor />
-                            <ButtonChangeColor />
-                        </Variants>
-                    </ProductCardInfo>
-                    <a href="#" className="product-card__url" />
-                </Card> */}
-                ;
             </ContainerProductList>
         </>
     );
@@ -99,7 +89,7 @@ const ButtonChangeColor = styled.span`
     height: 10px;
     border-radius: 50%;
     display: inline-block;
-    background-color: #000;
+    background-color: ${(props) => (props.color ? props.color : '#000')};
     cursor: pointer;
     margin: 0 0.25rem;
 `;

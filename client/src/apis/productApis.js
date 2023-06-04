@@ -23,6 +23,14 @@ const productApis = {
             console.log(error);
         }
     },
+    getProductDetails: async (slug) => {
+        try {
+            const response = await axios.get(`${BASE_URL}/v1/product/${slug}`);
+            return response.data;
+        } catch (error) {
+            console.log(error);
+        }
+    },
     createUser() {
         return;
     },

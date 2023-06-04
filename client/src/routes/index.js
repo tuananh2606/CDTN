@@ -13,7 +13,7 @@ import UserPageLayout from '../layouts/UserPageLayout';
 const publicRoutes = [
     { path: '/', component: HomePage },
     { path: '/:category', component: ProductGrid },
-    { path: '/product', component: ProductDetails },
+    { path: '/:category/:slug', component: ProductDetails },
     { path: '/registration', component: Registration },
     { path: '/user', component: UserPageClient, layout: UserPageLayout },
 ];

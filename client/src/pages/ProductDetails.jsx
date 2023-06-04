@@ -1,10 +1,23 @@
 import styled from 'styled-components';
 import { IoBookmarkOutline } from 'react-icons/io5';
+import { useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+
 import useWindowSize from '../hooks/useWindowSize';
 import Carousel from '../components/Carousel';
+import productApis from '../apis/productApis';
 
 const ProductDetails = () => {
     const size = useWindowSize();
+    let { slug } = useParams();
+    const { data, isLoading, error } = useQuery({
+        queryKey: ['products'],
+        queryFn: () => productApis.getProductDetails(slug),
+    });
+
+    if (isLoading) return 'Loading...';
+    if (error) return 'An error has occurred: ' + error.message;
     const imgs = [
         '/images/productdetail-frontview.png',
         '/images/frontview_img.png',
@@ -44,30 +57,23 @@ const ProductDetails = () => {
                                     <span className="product-id">Ma san pham</span>
                                     <IoBookmarkOutline />
                                 </div>
-                                <h1 className="product-name">LV Archlight 2.0 Platform Sneaker</h1>
+                                <h1 className="product-name">{data.product?.name}</h1>
                             </StyledProductHead>
                             <div>
                                 <StyledProductVariation>
-                                    <span className="product-variation">Sizes or Colors</span>
-                                    <span>32</span>
+                                    <span className="product-variation">Sizes</span>
+                                    <span>{data.product?.variation.size[0]}</span>
                                 </StyledProductVariation>
-                                <StyledOtherProduct>
+                                {/* <StyledOtherProduct>
                                     <span>Other Sizes</span>
                                     <div className="product-variation-selector">
                                         <span>LV Archlight 2.0 Platform Sneaker</span>
                                     </div>
-                                </StyledOtherProduct>
+                                </StyledOtherProduct> */}
                             </div>
                             <StyledButtonLink>Mua</StyledButtonLink>
 
-                            <p>
-                                Fashioned from full-grain Taurillon leather, the now-classic Capucines BB handbag
-                                displays a host of House signatures: leather-wrapped LV Initials, jewel-like handle
-                                mounts inspired by historic trunks, and a distinctive flap with a Monogram Flower motif.
-                                Timelessly elegant, this charming model can be carried by hand or worn cross-body on its
-                                detachable strap. First launched in 2013, the Capucines is named for the Parisian street
-                                where Louis Vuitton first opened shop, in 1854
-                            </p>
+                            <p>{data.product?.description}</p>
                             <h2>Thong tin san pham</h2>
                         </StyledProductCard>
                     </StyledProductCardWrapper>
