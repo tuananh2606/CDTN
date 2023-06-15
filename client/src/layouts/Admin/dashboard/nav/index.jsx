@@ -39,7 +39,7 @@ export default function Nav({ openNav, onCloseNav }) {
         },
         {
             title: 'user',
-            path: '/admin/user',
+            path: '/admin/users',
             icon: <GroupRoundedIcon />,
         },
         {
@@ -47,12 +47,8 @@ export default function Nav({ openNav, onCloseNav }) {
             path: '/admin/products',
         },
         {
-            title: 'blog',
-            path: '/admin/blog',
-        },
-        {
-            title: 'login',
-            path: '/login',
+            title: 'categories',
+            path: '/admin/categories',
         },
         {
             title: 'Not found',

@@ -1,6 +1,9 @@
 const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const { OAuth2Client } = require('google-auth-library');
+
+const oAuth2Client = new OAuth2Client(process.env.CLIENT_ID, process.env.CLIENT_SECRET, 'postmessage');
 
 var refreshTokens = [];
 
@@ -36,7 +39,7 @@ exports.registerUser = async (req, res) => {
         const hashed = await bcrypt.hash(req.body.password, salt);
 
         //Create new user
-        const newUser = await new User({
+        const newUser = new User({
             name: req.body.name,
             email: req.body.email,
             password: hashed,
@@ -66,9 +69,9 @@ exports.userLogin = async (req, res) => {
             res.cookie('refreshToken', refreshToken, {
                 httpOnly: true,
                 //secure -  Dev: false || Production: true
-                secure: true,
+                secure: false,
                 path: '/',
-                sameSite: 'None',
+                SameSite: 'None',
             });
             const { password, ...others } = user._doc;
             res.status(200).json({ ...others, accessToken });
@@ -79,7 +82,8 @@ exports.userLogin = async (req, res) => {
 };
 
 exports.requestRefreshToken = async (req, res) => {
-    const refreshToken = req.cookies?.refreshToken;
+    console.log(req.cookies.refreshToken);
+    const refreshToken = req.cookies.refreshToken;
     console.log(refreshToken);
     if (!refreshToken) return res.status(401).json("You're not authenticated");
     if (!refreshTokens.includes(refreshToken)) {
@@ -97,12 +101,52 @@ exports.requestRefreshToken = async (req, res) => {
             httpOnly: true,
             //secure -  Dev: false || Production: true
             secure: true,
-            path: '/',
+            Path: '/',
             sameSite: 'none',
         });
         res.status(200).json({ accessToken: newAccessToken });
     });
 };
+exports.userloginWithGoogle = async (req, res) => {
+    const { tokens } = await oAuth2Client.getToken(req.body.code); // exchange code for tokens
+    if (tokens.id_token) {
+        const response = await oAuth2Client.verifyIdToken({
+            idToken: tokens.id_token,
+            audience: process.env.CLIENT_ID,
+        });
+        const payload = response.getPayload();
+        const { email_verified, email, name, picture, sub } = payload;
+        let password = email + process.env.CLIENT_ID;
+        const salt = await bcrypt.genSalt(10);
+        const hashed = await bcrypt.hash(password, salt);
+        try {
+            if (email_verified) {
+                const user = await User.findOne({ googleId: sub });
+                if (user) {
+                    const accessToken = generateAccessToken(user);
+                    const refreshToken = generateRefreshToken(user);
+                    refreshTokens.push(refreshToken);
+                    res.cookie('refreshToken', refreshToken, {
+                        httpOnly: true,
+                        //secure -  Dev: false || Production: true
+                        secure: true,
+                        path: '/',
+                        sameSite: 'None',
+                    });
+                    const { password, ...others } = user._doc;
+                    res.status(200).json({ ...others, accessToken });
+                } else {
+                    let newUser = new User({ googleId: sub, name: name, email: email, password: hashed });
+                    const user = await newUser.save();
+                    return res.json(user);
+                }
+            }
+        } catch (error) {
+            return res.status(500).json(error);
+        }
+    }
+};
+
 exports.userLogout = async (req, res) => {
     res.clearCookie('refreshToken');
     refreshTokens = refreshTokens.filter((token) => token !== req.cookies.refreshToken);

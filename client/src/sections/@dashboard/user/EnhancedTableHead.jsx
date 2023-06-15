@@ -28,6 +28,13 @@ const EnhancedTableHead = (props) => {
                 backgroundColor: '#eeeeee',
             }}
         >
+            {/* <TableRow>
+                <TableCell align="center" colSpan={3}></TableCell>
+                <TableCell align="center" colSpan={2} sx={{ borderBottom: '1px solid #757575' }}>
+                    Videos
+                </TableCell>
+                <TableCell align="center" colSpan={1}></TableCell>
+            </TableRow> */}
             <TableRow>
                 <TableCell padding="checkbox">
                     <Checkbox

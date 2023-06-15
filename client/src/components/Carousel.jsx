@@ -2,6 +2,8 @@ import { useRef } from 'react';
 import styled from 'styled-components';
 import { Navigation, Pagination, Autoplay, A11y } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { LazyLoadImage, trackWindowScroll } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -10,7 +12,7 @@ import 'swiper/css/scrollbar';
 import 'swiper/css/autoplay';
 
 const Carousel = (props) => {
-    const { imgs, pagination, autoplay, loop, isProduct, isCustom, slidesPerView = 1, turnOffArrows = false } = props;
+    const { imgs, pagination, autoplay, loop, isProduct, isCustom, slidesperview = 1, turnOffArrows = false } = props;
 
     const swiperRef = useRef(null);
 
@@ -24,7 +26,7 @@ const Carousel = (props) => {
                     // install Swiper modules
                     modules={[Navigation, Pagination, A11y, Autoplay]}
                     spaceBetween={20}
-                    slidesPerView={slidesPerView}
+                    slidesPerView={slidesperview}
                     autoplay={autoplay}
                     pagination={pagination}
                     loop={loop}
@@ -37,17 +39,33 @@ const Carousel = (props) => {
                         // swiper.navigation.update();
                     }}
                 >
-                    {imgs.map((img, idx) => {
-                        return (
-                            <SwiperSlide key={idx}>
-                                {!isProduct ? (
-                                    <StyledImage src={img.url} alt="Anh" />
-                                ) : (
-                                    <StyledProductImage src={img.url} alt="Anh" slidesPerView={slidesPerView} />
-                                )}
-                            </SwiperSlide>
-                        );
-                    })}
+                    {imgs &&
+                        imgs.length > 0 &&
+                        imgs.map((img, idx) => {
+                            return (
+                                <SwiperSlide key={idx}>
+                                    {!isProduct ? (
+                                        // <LazyLoadImage
+                                        //     key={idx}
+                                        //     src={img}
+                                        //     alt={`Image Alt-${idx}`}
+                                        //     className="img-lazy"
+                                        //     width={700}
+                                        //     height={500}
+                                        //     effect="blur" // opacity | black-and-white
+                                        // />
+                                        <StyledImage src={img.url} alt="Anh" effect="blur" />
+                                    ) : (
+                                        <StyledProductImage
+                                            src={img.url}
+                                            alt="Anh"
+                                            slidesperview={slidesperview}
+                                            effect="blur"
+                                        />
+                                    )}
+                                </SwiperSlide>
+                            );
+                        })}
                 </Swiper>
             </Wrapper>
             <SwiperPrevBtn
@@ -97,22 +115,39 @@ const Wrapper = styled.div`
     } */
 `;
 
-const StyledImage = styled.img`
+const StyledImage = styled(LazyLoadImage)`
     width: 100%;
     max-height: 100%;
     object-fit: cover;
-    aspect-ratio: 5/3;
+    /* aspect-ratio: 5/3; */
     @media screen and (max-width: 1024px) {
         aspect-ratio: 1/1;
     }
 `;
 
-const StyledProductImage = styled.img`
+// const StyledImage = styled.img`
+//     width: 100%;
+//     max-height: 100%;
+//     object-fit: cover;
+//     aspect-ratio: 5/3;
+//     @media screen and (max-width: 1024px) {
+//         aspect-ratio: 1/1;
+//     }
+// `;
+
+const StyledProductImage = styled(LazyLoadImage)`
     width: 100%;
     height: 100%;
     object-fit: cover;
-    background-color: ${(props) => props.slidesPerView > 1 && '#f6f5f3'};
+    background-color: ${(props) => props.slidesperview > 1 && '#f6f5f3'};
 `;
+
+// const StyledProductImage = styled.img`
+//     width: 100%;
+//     height: 100%;
+//     object-fit: cover;
+//     background-color: ${(props) => props.slidesPerView > 1 && '#f6f5f3'};
+// `;
 
 const SwiperBtn = styled.div`
     position: absolute;

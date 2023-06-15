@@ -7,6 +7,11 @@ const productSchema = new mongoose.Schema(
             lowercase: true,
             trim: true,
         },
+        code: {
+            type: String,
+            required: true,
+            unique: true,
+        },
         name: {
             type: String,
             required: true,
@@ -18,33 +23,21 @@ const productSchema = new mongoose.Schema(
         },
         images: [
             {
-                url: {
-                    type: String,
-                    required: true,
-                },
+                public_id: String,
+                url: String,
             },
         ],
         price: {
             type: Number,
-            required: [true, 'Please enter product price'],
+            required: true,
         },
         category: {
             type: String,
             required: true,
         },
-        variation: {
-            colors: [
-                {
-                    name: String,
-                    image: String,
-                },
-            ],
-            size: [{ type: Number }],
-        },
         stock: {
             type: Number,
             required: [true, 'Please enter product stock'],
-            maxlength: [4, 'Stock cannot exceed limit'],
             default: 1,
         },
     },

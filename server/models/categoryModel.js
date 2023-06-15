@@ -15,13 +15,13 @@ const categorySchema = new mongoose.Schema(
         videos: {
             desktop_tablet: [
                 {
-                    name: String,
+                    public_id: String,
                     url: String,
                 },
             ],
             mobile: [
                 {
-                    name: String,
+                    public_id: String,
                     url: String,
                 },
             ],
@@ -29,7 +29,7 @@ const categorySchema = new mongoose.Schema(
 
         images: [
             {
-                name: String,
+                public_id: String,
                 url: String,
             },
         ],

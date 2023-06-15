@@ -1,12 +1,17 @@
 const Product = require('../models/productModel');
 const Category = require('../models/categoryModel');
 const slugify = require('slugify');
+const cloudinary = require('../cloudinary');
+const { uploadFiles } = require('../utils/uploadFiles');
 
+const UpperCaseFirstLetter = (str) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+};
 // Get All Products
 exports.getAllProducts = async (req, res) => {
     try {
         const products = await Product.find();
-        return res.status(200).json({ success: true, products });
+        return res.status(200).json(products);
     } catch (error) {
         res.status(500).json(error);
     }
@@ -25,20 +30,75 @@ exports.getProductsByCategory = async (req, res) => {
 
 //Get product details
 exports.getProductDetails = async (req, res) => {
-    const product = await Product.findOne({ slug: req.params.slug });
+    const product = await Product.findOne({ code: req.params.code });
     return res.status(200).json({
         success: true,
         product,
     });
 };
+exports.getProductById = async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id);
+        res.status(200).json(product);
+    } catch (error) {
+        res.status(500).json(error);
+    }
+};
+
+//Upload Media Product
+
+exports.uploadMedia = async (req, res) => {
+    try {
+        const path = `${req.body.category}/${req.body.name}`;
+        const urls = await uploadFiles(req, res, path);
+        res.status(200).json(urls);
+    } catch (error) {
+        res.status(500).json(error);
+    }
+};
 
 //Create new product
-exports.createProduct = async (req, res) => {
+exports.createNewProduct = async (req, res) => {
     try {
-        const newProduct = new Product({ ...req.body, slug: slugify(req.body.name) });
+        const productObj = {
+            code: req.body.code,
+            name: req.body.name,
+            slug: slugify(req.body.slug),
+            description: req.body.description,
+            category: req.body.category,
+            price: req.body.price,
+            stock: req.body.stock,
+            images: req.body.images,
+        };
+        const newProduct = new Product(productObj);
         const savedProduct = await newProduct.save();
         res.status(200).json(savedProduct);
     } catch (error) {
         res.status(500).json(error);
+    }
+};
+
+exports.updateProduct = async (req, res) => {
+    try {
+        const { slug } = req.body;
+        const newProductData = {
+            ...req.body,
+            category: UpperCaseFirstLetter(req.body.category),
+            slug: slugify(slug),
+        };
+        await Product.findByIdAndUpdate(req.params.id, newProductData, { new: true, runValidators: true });
+        return res.status(200).json({ success: 'Update Successfully!' });
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+};
+
+exports.deleteProduct = async (req, res) => {
+    try {
+        await cloudinary.deleteFolder(`Images/${req.body.category}/${req.body.name}`);
+        await Product.findByIdAndDelete(req.params.id);
+        return res.status(200).json('Delete Successfully!');
+    } catch (error) {
+        return res.status(500).json(error);
     }
 };

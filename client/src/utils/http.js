@@ -23,7 +23,11 @@ export const createAxios = (user, dispatch, stateSuccess) => {
             const decodedToken = jwt_decode(user?.accessToken);
 
             if (decodedToken.exp < date.getTime() / 1000) {
+                localStorage.removeItem('persist:root');
                 const data = await refreshToken();
+                // if (!data) {
+                //     localStorage.clear();
+                // }
                 console.log(data);
                 const refreshUser = {
                     ...user,

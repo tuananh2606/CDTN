@@ -2,6 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { CiStar, CiSearch } from 'react-icons/ci';
 import { BsHandbag } from 'react-icons/bs';
+import { BiUser } from 'react-icons/bi';
+
+import Badge from '@mui/material/Badge';
 import { IconContext } from 'react-icons';
 import { useLocation, Link, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -26,7 +29,7 @@ const Header = () => {
     const user = useSelector((state) => state.auth.login.currentUser);
     const navigate = useNavigate();
 
-    const direction = scrollDirection.direction;
+    const direction = scrollDirection.direction ? scrollDirection.direction : 'top';
 
     const [navToggle, setNavToggle] = useState(false);
     const [searchToggle, setSearchToggle] = useState(false);
@@ -113,7 +116,12 @@ const Header = () => {
                         <div className="nav--right">
                             <CiSearch size={22} onClick={() => setSearchToggle(!searchToggle)} />
                             <CiStar size={24} />
-                            <BsHandbag size={18} onClick={handleUtilityCotent} />
+                            <Link to="/cart" className="cart-link">
+                                <BsHandbag className="cart-icon" />
+                                <span>2</span>
+                            </Link>
+
+                            <BiUser size={18} onClick={handleUtilityCotent} />
                         </div>
                     </IconContext.Provider>
                 </NavBarTop>
@@ -209,9 +217,17 @@ const NavBarTop = styled.div`
         justify-self: end;
         display: flex;
         align-items: center;
-        a {
-            @media (max-width: 768px) {
-                display: none;
+        .cart-link {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            padding: 5px;
+            color: inherit;
+            .cart-icon {
+                margin-right: 2px;
+            }
+            span {
+                font-size: 14px;
             }
         }
         .nav-right__icons {
@@ -245,4 +261,16 @@ const BackDrop = styled.div`
     inset: 0;
     background-color: rgba(0, 0, 0, 0.8);
     z-index: 100;
+`;
+
+const StyledBadge = styled(Badge)`
+    .MuiBadge-badge {
+        background-color: #ccc;
+        color: red;
+        right: 5px;
+        top: 5px;
+        min-width: 12px;
+        width: 14px;
+        height: 14px;
+    }
 `;

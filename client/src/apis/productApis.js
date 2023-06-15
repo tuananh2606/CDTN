@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:3001';
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const productApis = {
     getAllProducts: async () => {
@@ -13,7 +13,7 @@ const productApis = {
     },
     getProductsByCategory: async (category) => {
         try {
-            const response = await axios.get(`${BASE_URL}/v1/product/`, {
+            const response = await axios.get(`${BASE_URL}/v1/product`, {
                 params: {
                     category: category,
                 },
@@ -23,16 +23,13 @@ const productApis = {
             console.log(error);
         }
     },
-    getProductDetails: async (slug) => {
+    getProductDetails: async (slug, code) => {
         try {
-            const response = await axios.get(`${BASE_URL}/v1/product/${slug}`);
+            const response = await axios.get(`${BASE_URL}/v1/product/${slug}/${code}`);
             return response.data;
         } catch (error) {
             console.log(error);
         }
-    },
-    createUser() {
-        return;
     },
     updateUser: async (axiosJWT, accessToken, data) => {
         const { id, updateUser } = data;

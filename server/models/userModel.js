@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 const { isEmail } = require('validator');
 const userSchema = new mongoose.Schema(
     {
+        googleId: {
+            type: String,
+            default: null,
+        },
         name: {
             type: String,
             require: true,

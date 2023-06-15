@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { IoCloseOutline, IoChevronForward } from 'react-icons/io5';
 
-const Filter = ({ direction }) => {
+const Filter = ({ direction, path }) => {
     const [filterToggle, setFilterToggle] = useState(false);
     useEffect(() => {
         if (filterToggle === true) {
@@ -13,12 +13,13 @@ const Filter = ({ direction }) => {
             document.body.style.overflow = 'unset';
         }
     }, [filterToggle]);
+    console.log(path);
 
     return (
         <>
             <FilterWrapper>
                 <FilterContent direction={direction}>
-                    <span>Title</span>
+                    <h5>{path.charAt(0).toUpperCase() + path.slice(1)}</h5>
                     <div>
                         <ButtonFilter onClick={() => setFilterToggle(!filterToggle)}>
                             <span>Filter</span>
@@ -77,10 +78,14 @@ const FilterContent = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 1rem;
+    padding: 0 var(--header-padding-x);
     border-top: 1px solid #ccc;
     border-bottom: 1px solid #ccc;
     z-index: 99;
+    h5 {
+        font-weight: normal;
+        font-size: 14px;
+    }
     @media only screen and (max-width: 768px) {
         transform: translateY(3.7rem);
         top: ${(props) => (props.direction === 'down' ? '-3.7rem' : '0')};

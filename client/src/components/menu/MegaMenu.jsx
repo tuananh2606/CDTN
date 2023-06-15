@@ -44,7 +44,7 @@ const MegaMenu = ({ navToggle, setNavToggle }, ref) => {
         },
     ];
 
-    const [history, setHistory] = useState([{ data: data?.categories }]);
+    const [history, setHistory] = useState([{ data: data }]);
     const current = history[history.length - 1];
 
     const handleBack = () => {
@@ -61,7 +61,7 @@ const MegaMenu = ({ navToggle, setNavToggle }, ref) => {
             <NavigationWrapper navToggle={navToggle} ref={ref}>
                 {history.length > 1 && <LevelMenu title={current.title} onBack={handleBack} />}
                 <ul>
-                    {data?.categories?.map((item, idx) => {
+                    {data?.map((item, idx) => {
                         const isParent = !!item.children;
                         return (
                             <NavItem key={idx}>
@@ -79,8 +79,8 @@ const MegaMenu = ({ navToggle, setNavToggle }, ref) => {
                                     ) : (
                                         <span>{item?.name}</span>
                                     )} */}
-                                    <Link to={'/' + item.slug} onClick={resetMenu}>
-                                        {item.name}
+                                    <Link to={'/' + item.slug} className="menu-nav__link" onClick={resetMenu}>
+                                        <span>{item.name}</span>
                                     </Link>
 
                                     <IoChevronForward className="btn-direct-link" />
@@ -144,18 +144,7 @@ const NavItem = styled.li`
     list-style: none;
     margin: 1rem 0;
     padding: 0 var(--header-padding-x);
-    span {
-        color: #000;
-        text-decoration: none;
-        background-image: linear-gradient(#000 0 0);
-        background-position: 0 100%; /*OR bottom left*/
-        background-size: 0% 1px;
-        background-repeat: no-repeat;
-        transition: background-size 0.3s;
-        &:hover {
-            background-size: 100% 1px;
-        }
-    }
+
     @media (max-width: 768px) {
         .menu__child {
             display: none;
@@ -193,6 +182,21 @@ const MegaMenuWrapper = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
+    .menu-nav__link {
+        text-decoration: none;
+        span {
+            color: #000;
+            text-decoration: none;
+            background-image: linear-gradient(#000 0 0);
+            background-position: 0 100%; /*OR bottom left*/
+            background-size: 0% 1px;
+            background-repeat: no-repeat;
+            transition: background-size 0.3s;
+            &:hover {
+                background-size: 100% 1px;
+            }
+        }
+    }
 `;
 const MegaMenuContent = styled.div`
     position: absolute;

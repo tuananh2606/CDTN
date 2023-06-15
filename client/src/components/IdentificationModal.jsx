@@ -6,7 +6,6 @@ import { forwardRef } from 'react';
 import { Form, Formik } from 'formik';
 
 import Modal from './common/Modal';
-import useOnClickOutside from '../hooks/useCheckClickedOutside';
 import { loginUser } from '../redux/apiRequest';
 import { useDispatch, useSelector } from 'react-redux';
 

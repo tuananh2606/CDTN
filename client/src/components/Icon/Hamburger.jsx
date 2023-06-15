@@ -7,7 +7,7 @@ const HamburgerIcon = ({ navToggle, width = '22px', height = '22px' }) => {
     const scrollDirection = useScrollDirection();
     const { pathname } = useLocation();
 
-    const direction = scrollDirection.direction;
+    const direction = scrollDirection.direction ? scrollDirection.direction : 'top';
 
     return (
         <HamburgerContainer

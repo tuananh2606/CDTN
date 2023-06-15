@@ -5,7 +5,6 @@ import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { loginSuccess } from '../../redux/authSlice';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useQueryString } from '../../hooks';
 import { createAxios } from '../../utils/http';
 import axios from 'axios';
 // @mui
@@ -30,14 +29,14 @@ import {
 } from '@mui/material';
 // components
 import Label from '../../components/label';
-// import Label from '../../../components/label';
 import Iconify from '../../components/iconify';
 // import Scrollbar from '../components/scrollbar';
 // sections
 import { EnhancedTableHead, EnhancedTableToolbar } from '../../sections/@dashboard/user';
 
+import EditForm from '../../components/forms/admin/EditForm';
 import { getAllUsers } from '../../react-query/apis';
-import adminApi from '../../apis/adminApi';
+import adminApis from '../../apis/adminApis';
 import DialogComponent from '../../components/common/Dialog';
 // ----------------------------------------------------------------------
 
@@ -196,14 +195,14 @@ export default function UserPage() {
     const isNotFound = !filteredUsers.length && !!filterName;
 
     const deleteUserMutation = useMutation({
-        mutationFn: (id) => adminApi.deleteUser(axiosJWT, user?.accessToken, id),
+        mutationFn: (id) => adminApis.deleteUser(axiosJWT, user?.accessToken, id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['users'] });
         },
     });
 
     // const updateUserMutation = useMutation({
-    //     mutationFn: (id) => adminApi.deleteUser(axiosJWT, user?.accessToken, id),
+    //     mutationFn: (id) => adminApis.deleteUser(axiosJWT, user?.accessToken, id),
     //     onSuccess: () => {
     //         queryClient.invalidateQueries({ queryKey: ['users'] });
     //     },
@@ -361,7 +360,15 @@ export default function UserPage() {
                         onRowsPerPageChange={handleChangeRowsPerPage}
                     />
                 </Card>
-                {dialog && <DialogComponent open={dialog} onClose={handleEditClose} id={_idUser} />}
+                {dialog && (
+                    <DialogComponent
+                        open={dialog}
+                        form={<EditForm />}
+                        onClose={handleEditClose}
+                        id={_idUser}
+                        userCheck
+                    />
+                )}
             </Container>
 
             <Popover

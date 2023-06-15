@@ -2,9 +2,27 @@ const express = require('express');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
+const multer = require('multer');
 const cors = require('cors');
+const path = require('path');
+// const streamifier = require('streamifier');
+const fs = require('fs');
+
+const cloudinary = require('./cloudinary');
 const connectDatabase = require('./config/database');
+
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, path.join(__dirname, 'uploads'));
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname);
+    },
+});
+
+exports.upload = multer({ storage: storage });
 
 const app = express();
 //  CONFIG
@@ -12,8 +30,7 @@ dotenv.config({ path: './config/config.env' });
 const PORT = process.env.PORT || 1000;
 
 connectDatabase();
-
-app.use(cors());
+app.use(cors({ credentials: true, origin: ['http://localhost:5173'] }));
 app.use(cookieParser());
 app.use(
     bodyParser.urlencoded({
@@ -21,8 +38,6 @@ app.use(
     }),
 );
 app.use(bodyParser.json());
-
-// app.use(bodyParse.json({ limit: '50mb' }));
 app.use(morgan('common'));
 
 //ROUTES
@@ -31,6 +46,7 @@ const category = require('./routes/categoryRoute');
 const authRoute = require('./routes/authRoute');
 const user = require('./routes/userRoute');
 
+app.use(express.static('public'));
 app.use('/v1/product', product);
 app.use('/v1/category', category);
 app.use('/v1/auth', authRoute);
