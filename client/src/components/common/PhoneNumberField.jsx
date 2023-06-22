@@ -8,10 +8,7 @@ import { at } from 'lodash';
 
 const PhoneNumberField = (props) => {
     const { isLabelPosition = false, htmlFor, labelCustom, ...rest } = props;
-    const [field, meta] = useField({
-        name: props.name,
-        type: 'tel',
-    });
+    const [field, meta, helpers] = useField(props.name);
 
     function _renderHelperText() {
         const [touched, error] = at(meta, 'touched', 'error');
@@ -27,7 +24,17 @@ const PhoneNumberField = (props) => {
                     {labelCustom}
                 </StyledInputLabel>
             )}
-            <StyledPhoneField defaultCountry="VN" international {...field} {...rest} />
+
+            <StyledPhoneField
+                defaultCountry="VN"
+                international
+                value={field.value}
+                {...field}
+                {...rest}
+                onChange={(value) => {
+                    helpers.setValue(value);
+                }}
+            />
             {meta.touched && meta.error ? <div className="error">{meta.error}</div> : null}
         </Container>
     );

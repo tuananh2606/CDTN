@@ -11,31 +11,43 @@ const cartSlice = createSlice({
             const check = state.shoppingCart.findIndex((product) => product.id === payload.id);
             console.log(check);
             if (check !== -1) {
-                console.log(state.shoppingCart[check].quantity);
                 state.shoppingCart[check].quantity += 1;
-                console.log(typeof state.shoppingCart[check].quantity);
             } else {
                 state.shoppingCart.push(payload);
             }
         },
         removeFromCart: (state, action) => {
             state.shoppingCart = state.shoppingCart.filter((product) => product.id != action.payload);
-            // state.shoppingCart = state.shoppingCart.filter((product) => {
-            //     console.log(product);
-            //     product.id !== action.payload;
-            // });
         },
         updateCartItem: (state, action) => {
             const check = state.shoppingCart.findIndex((product) => product.id === action.payload.id);
             if (check !== -1) {
                 const { idx, quantity } = action.payload;
-                console.log(typeof quantity);
                 state.shoppingCart[idx].quantity = Number(quantity);
             }
+        },
+        getEstimatedTotal: (state, action) => {
+            let { total, cartQuantity } = state.shoppingCart.reduce(
+                (cartTotal, cartItem) => {
+                    const { price, quantity } = cartItem;
+                    const itemTotal = price * quantity;
+
+                    cartTotal.total += itemTotal;
+                    cartTotal.quantity += quantity;
+
+                    return cartTotal;
+                },
+                {
+                    total: 0,
+                    cartQuantity: 0,
+                },
+            );
+            total = parseFloat(total.toFixed(2));
+            console.log(total);
         },
     },
 });
 
-export const { addToCart, removeFromCart, updateCartItem } = cartSlice.actions;
+export const { addToCart, removeFromCart, updateCartItem, getEstimatedTotal } = cartSlice.actions;
 
 export default cartSlice.reducer;

@@ -45,12 +45,14 @@ const product = require('./routes/productRoute');
 const category = require('./routes/categoryRoute');
 const authRoute = require('./routes/authRoute');
 const user = require('./routes/userRoute');
+const order = require('./routes/orderRoute');
 
 app.use(express.static('public'));
 app.use('/v1/product', product);
 app.use('/v1/category', category);
 app.use('/v1/auth', authRoute);
 app.use('/v1/user', user);
+app.use('/v1/order', order);
 
 app.get('/api', (req, res) => {
     res.json({ message: 'Hello from server!' });

@@ -1,4 +1,12 @@
-import { HomePage, ProductGrid, ProductDetails, RegistrationPage, CartPage, CheckoutPage } from '../pages/Client';
+import {
+    HomePage,
+    ProductGrid,
+    ProductDetails,
+    RegistrationPage,
+    CartPage,
+    CheckoutPage,
+    LoginPage,
+} from '../pages/Client';
 
 import { UserPageClient } from '../pages/User';
 import { UserPage, DashboardAppPage, CategoriesPage, ProductsPage } from '../pages/Admin';
@@ -7,15 +15,21 @@ import UpdateProductPage from '../pages/Admin/Product/UpdateProductPage';
 // import ProductsPage from '../pages/Admin/ProductsPage';
 
 //Layouts
-import UserPageLayout from '../layouts/UserPageLayout';
+import { UserPageLayout, LoginLayout } from '../layouts';
+import ProtectedRoutes from './ProtectedRoutes';
 
 const publicRoutes = [
     { path: '/', component: HomePage },
     { path: '/:category', component: ProductGrid },
     { path: '/:category/:slug/:code', component: ProductDetails },
     { path: '/registration', component: RegistrationPage },
-    { path: '/user', component: UserPageClient, layout: UserPageLayout },
+    { path: '/login', component: LoginPage, layout: LoginLayout },
     { path: '/cart', component: CartPage },
+    // { path: '/checkout', component: CheckoutPage },
+];
+
+const protectedRoutes = [
+    { path: '/user', component: UserPageClient, layout: UserPageLayout },
     { path: '/checkout', component: CheckoutPage },
 ];
 
@@ -30,4 +44,4 @@ const privateRoutes = [
     // { path: '/admin/product', component: ProductsPage },
 ];
 
-export { publicRoutes, privateRoutes };
+export { publicRoutes, privateRoutes, protectedRoutes };

@@ -1,30 +1,32 @@
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
-import Header from './Header';
-import Footer from './Footer';
+import HeaderOnly from './HeaderOnly';
+import FooterOnly from './FooterOnly';
 
-const MainLayout = ({ children }) => {
+const LoginLayout = ({ children }) => {
     return (
         <Layout>
-            <Header />
+            <HeaderOnly />
             <main className="content">{children}</main>
-            <Footer />
+            <FooterOnly />
         </Layout>
     );
 };
 
-MainLayout.propTypes = {
+export default LoginLayout;
+
+LoginLayout.propTypes = {
     children: PropTypes.node.isRequired,
 };
-
-export default MainLayout;
 
 const Layout = styled.div`
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    height: 100%;
     .content {
+        margin-top: 4.5rem;
         flex: 1 0 auto;
     }
 `;

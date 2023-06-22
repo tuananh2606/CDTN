@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Input, TextField, Button } from '@mui/material';
+import { TextField, Button, InputLabel, MenuItem, FormControl, Select } from '@mui/material';
 import styled from 'styled-components';
 import axios from 'axios';
 import { loginSuccess } from '../../../redux/authSlice';
@@ -17,6 +17,7 @@ const CreateProductPage = ({ setCreatePageShow }) => {
     const [price, setPrice] = useState('');
     const [stock, setStock] = useState('');
     const [images, setImages] = useState([]);
+    const [categories, setCategories] = useState([]);
 
     const user = useSelector((state) => state.auth.login.currentUser);
     const dispatch = useDispatch();
@@ -24,11 +25,22 @@ const CreateProductPage = ({ setCreatePageShow }) => {
     let axiosJWT = createAxios(user, dispatch, loginSuccess);
 
     const queryClient = useQueryClient();
-
     const createProductMutation = useMutation({
         mutationFn: (data) => adminApis.createProduct(axiosJWT, user?.accessToken, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['products'] });
+        },
+    });
+
+    useQuery({
+        queryKey: ['categories'],
+        queryFn: () => adminApis.getAllCategories(axiosJWT, user?.accessToken),
+        onSuccess: (data) => {
+            setCategories(
+                data?.map((item, idx) => {
+                    return { name: item.name, id: item._id };
+                }),
+            );
         },
     });
 
@@ -62,14 +74,14 @@ const CreateProductPage = ({ setCreatePageShow }) => {
                     name,
                     slug,
                     description,
-                    category: category.charAt(0).toUpperCase() + category.slice(1).toLowerCase(),
+                    category,
                     price,
                     stock,
                 };
             }
 
             createProductMutation.mutate(newProduct);
-            // setCreatePageShow(false);
+            setCreatePageShow(false);
         } catch (error) {
             console.log(error);
         }
@@ -97,12 +109,31 @@ const CreateProductPage = ({ setCreatePageShow }) => {
                     onChange={(e) => setImages(e.target.files)}
                 />
                 {/* <StyledTextInput type="text" name="code" label="Variation" onChange={(e) => setName(e.target.value)} /> */}
-                <StyledTextInput
+
+                <FormControl fullWidth sx={{ mt: '1rem', mb: '0.5rem' }}>
+                    <InputLabel id="select-label">Category</InputLabel>
+                    <Select
+                        labelId="select-label"
+                        id="select"
+                        value={category || ''}
+                        label="Category"
+                        onChange={(e) => setCategory(e.target.value)}
+                    >
+                        {categories &&
+                            categories.length > 0 &&
+                            categories.map((item, idx) => (
+                                <MenuItem key={idx} value={item.id}>
+                                    {item.name}
+                                </MenuItem>
+                            ))}
+                    </Select>
+                </FormControl>
+                {/* <StyledTextInput
                     type="text"
                     name="category"
                     label="Category"
                     onChange={(e) => setCategory(e.target.value)}
-                />
+                /> */}
                 <StyledTextInput type="text" name="price" label="Price" onChange={(e) => setPrice(e.target.value)} />
                 <StyledTextInput type="text" name="stock" label="Stock" onChange={(e) => setStock(e.target.value)} />
                 <Button variant="outlined" color="secondary" type="submit" sx={{ mt: 3 }}>

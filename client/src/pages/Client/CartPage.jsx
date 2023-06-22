@@ -1,25 +1,18 @@
 import styled from 'styled-components';
-import { useEffect, useState } from 'react';
 import { InputLabel, FormControl, Button, Select, MenuItem, NativeSelect } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { updateCartItem, removeFromCart } from '../../redux/cartSlice';
 import { Link } from 'react-router-dom';
 
 const CartPage = () => {
-    const [quantity, setQuantity] = useState({});
     const cart = useSelector((state) => state.cart.shoppingCart);
     const dispatch = useDispatch();
-    console.log(cart);
     const handleChange = (event, idx, id) => {
-        console.log(id);
-        const value = {
-            id: id,
-            idx: id,
-            quantity: event.target.value,
-        };
-        setQuantity((prevState) => ({ ...prevState, [id]: value }));
         dispatch(updateCartItem({ ['id']: id, ['idx']: idx, quantity: event.target.value }));
     };
+
+    console.log(cart);
+
     const quantityArr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     const handleRemove = (id) => {
         dispatch(removeFromCart(id));

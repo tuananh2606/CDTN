@@ -9,13 +9,14 @@ import {
     logoutSuccess,
     logoutFailed,
 } from './authSlice';
+import { useNavigate } from 'react-router-dom';
 
-export const loginUser = async (user, dispatch, navigate) => {
+export const loginUser = async (user, dispatch, navigate, path) => {
     dispatch(loginStart());
     try {
         const res = await axios.post('http://localhost:3001/v1/auth/login', user);
         dispatch(loginSuccess(res.data));
-        navigate('/user');
+        path ? navigate(path) : navigate('/user');
     } catch (err) {
         dispatch(loginFailed());
     }

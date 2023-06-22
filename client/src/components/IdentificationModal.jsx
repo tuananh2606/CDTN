@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import Button from '@mui/material/Button';
-import InputField from './common/InputField';
+import { InputField } from './common';
 import { Link, useNavigate } from 'react-router-dom';
 import { forwardRef } from 'react';
 import { Form, Formik } from 'formik';

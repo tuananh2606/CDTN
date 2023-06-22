@@ -32,8 +32,6 @@ const ProductGrid = () => {
         setColorArray(clr);
     };
 
-    console.log(data);
-
     return (
         <>
             <Filter path={category} direction={scrollDirection.direction} />

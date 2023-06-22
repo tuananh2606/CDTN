@@ -28,8 +28,10 @@ const PaymentForm = () => {
                 Item One
             </TabPanel>
             <TabPanel value={value} index={1}>
-                <RadioButtonGroup name="payment" value="ttknh" label="Thanh toán khi nhận hàng" />
-                <RadioButtonGroup name="payment" value="ttqvnp" label="Thanh toán qua VNPAY" />
+                <RadioGroup aria-labelledby="demo-radio-buttons-group-label" defaultValue="ttknh">
+                    <RadioButtonGroup name="payment" value="ttknh" label="Thanh toán khi nhận hàng" />
+                    <RadioButtonGroup name="payment" value="ttqvnp" label="Thanh toán qua VNPAY" />
+                </RadioGroup>
             </TabPanel>
         </FormLayout>
     );

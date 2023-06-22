@@ -5,34 +5,46 @@ import Carousel from '../../components/Carousel';
 import HeroVideo from '../../components/HeroVideo';
 import useWindowSize from '../../hooks/useWindowSize';
 import categoryApis from '../../apis/categoryApis';
+import productApis from '../../apis/productApis';
+import { useState, useEffect } from 'react';
 
 const HomePage = () => {
     const size = useWindowSize();
+    const [imgs, setImgs] = useState([]);
 
     const { data, isLoading, error } = useQuery({
         queryKey: ['categories'],
         queryFn: () => categoryApis.getAllCategories(),
     });
 
+    const productsQuery = useQuery({
+        queryKey: ['latest-products'],
+        queryFn: () => productApis.getLatestProducts(),
+    });
+
+    useEffect(() => {
+        productsQuery?.data?.map((product, idx) => {
+            const img = product.images.slice(0, 1);
+            setImgs((prev) => [...prev, ...img]);
+        });
+    }, [productsQuery.data]);
+
     if (isLoading) return 'Loading...';
     if (error) return 'An error has occurred: ' + error.message;
 
     const videos = data?.[1].videos || [];
 
-    const imgs = [
-        'http://media.gucci.com/content/DarkGray_ProductPush_Standard_700x700/1681494334/ProductPush_67579710ODT5467-april17-01_001_Light.jpg',
-        'http://media.gucci.com/content/DarkGray_ProductPush_Standard_700x700/1681494332/ProductPush_67220610ODT1060-april17-01_001_Light.jpg',
-        'http://media.gucci.com/content/DarkGray_ProductPush_Standard_700x700/1681494332/ProductPush_67220610ODT1060-april17-01_001_Light.jpg',
-    ];
     return (
         <>
             <HeroVideo
                 id="player1"
                 url={`${size.width > 786 ? videos?.desktop_tablet?.[0].url : videos?.mobile?.[0].url}`}
             />
-            <StyledWrapperCaroseul>
-                <Carousel imgs={imgs} pagination={false} isCustom={false} />
-            </StyledWrapperCaroseul>
+            {imgs && imgs.length > 0 && (
+                <StyledWrapperCaroseul>
+                    <Carousel imgs={imgs} pagination={false} isCustom={false} />
+                </StyledWrapperCaroseul>
+            )}
             <HeroVideo
                 id="player2"
                 url={`${

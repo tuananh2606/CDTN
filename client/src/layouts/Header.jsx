@@ -17,6 +17,7 @@ import MegaMenu from '../components/menu/MegaMenu';
 import useWindowSize from '../hooks/useWindowSize';
 import IdentificationModal from '../components/IdentificationModal';
 import { HamburgerIcon, Logo } from '../components/Icon';
+import { current } from '@reduxjs/toolkit';
 
 const Header = () => {
     const scrollDirection = useScrollDirection();
@@ -27,6 +28,8 @@ const Header = () => {
     const modalRef = useRef(null);
 
     const user = useSelector((state) => state.auth.login.currentUser);
+    const cart = useSelector((state) => state.cart.shoppingCart);
+
     const navigate = useNavigate();
 
     const direction = scrollDirection.direction ? scrollDirection.direction : 'top';
@@ -34,6 +37,10 @@ const Header = () => {
     const [navToggle, setNavToggle] = useState(false);
     const [searchToggle, setSearchToggle] = useState(false);
     const [utilityToggle, setUtilityToggle] = useState(false);
+
+    const calcTotalQuantity = () => {
+        return cart.reduce((acc, cur) => acc + cur.quantity, 0);
+    };
 
     useEffect(() => {
         if (size.width > 768) {
@@ -118,7 +125,7 @@ const Header = () => {
                             <CiStar size={24} />
                             <Link to="/cart" className="cart-link">
                                 <BsHandbag className="cart-icon" />
-                                <span>2</span>
+                                {calcTotalQuantity() > 0 && <span>{calcTotalQuantity()}</span>}
                             </Link>
 
                             <BiUser size={18} onClick={handleUtilityCotent} />

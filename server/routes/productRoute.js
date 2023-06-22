@@ -9,10 +9,13 @@ const {
     getProductById,
     deleteProduct,
     updateProduct,
+    getLatestProducts,
 } = require('../controllers/productController');
+const middlewareAuth = require('../middlewares/auth');
 
-router.get('/', getAllProducts);
-router.get('/', getProductsByCategory);
+router.get('/', middlewareAuth.isAuthenticatedUser, middlewareAuth.authorizeRoles, getAllProducts);
+router.get('/latest', getLatestProducts);
+router.get('/by-category', getProductsByCategory);
 router.get('/:slug/:code', getProductDetails);
 router.post('/upload', upload.fields([{ name: 'images', maxCount: 12 }]), uploadMedia);
 router.get('/:id', getProductById);

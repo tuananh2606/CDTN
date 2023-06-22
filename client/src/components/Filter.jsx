@@ -13,7 +13,6 @@ const Filter = ({ direction, path }) => {
             document.body.style.overflow = 'unset';
         }
     }, [filterToggle]);
-    console.log(path);
 
     return (
         <>

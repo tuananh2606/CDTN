@@ -21,7 +21,7 @@ const UserPage = () => {
     };
 
     return (
-        <section style={{ backgroundColor: '#f6f5f3', height: '600px' }}>
+        <section style={{ backgroundColor: '#f6f5f3', height: '100%' }}>
             <HeadPage>
                 <img
                     src="https://secure.louisvuitton.com/images/is/image/lv/1/LV/louis-vuitton--my_lv_welcome_page_desktop.jpg"

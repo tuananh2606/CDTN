@@ -11,9 +11,17 @@ const productApis = {
             console.log(error);
         }
     },
+    getLatestProducts: async () => {
+        try {
+            const response = await axios.get(`${BASE_URL}/v1/product/latest`);
+            return response.data;
+        } catch (error) {
+            console.log(error);
+        }
+    },
     getProductsByCategory: async (category) => {
         try {
-            const response = await axios.get(`${BASE_URL}/v1/product`, {
+            const response = await axios.get(`${BASE_URL}/v1/product/by-category`, {
                 params: {
                     category: category,
                 },

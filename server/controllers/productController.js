@@ -17,12 +17,21 @@ exports.getAllProducts = async (req, res) => {
     }
 };
 
+exports.getLatestProducts = async (req, res) => {
+    try {
+        const products = await Product.find().sort({ $natural: 1 }).limit(3);
+        return res.status(200).json(products);
+    } catch (error) {
+        res.status(500).json(error);
+    }
+};
+
 //Get All Product By Category
 exports.getProductsByCategory = async (req, res) => {
     try {
-        const { slug } = await Category.findOne({ slug: req.query.category });
-        const products = await Product.find({ category: slug });
-        return res.status(200).json({ success: true, products });
+        const { _id } = await Category.findOne({ slug: req.query.category });
+        const products = await Product.find({ category: _id }).populate('category').exec();
+        return res.status(200).json(products);
     } catch (error) {
         res.status(500).json(error);
     }
@@ -39,6 +48,7 @@ exports.getProductDetails = async (req, res) => {
 exports.getProductById = async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);
+
         res.status(200).json(product);
     } catch (error) {
         res.status(500).json(error);
@@ -49,7 +59,8 @@ exports.getProductById = async (req, res) => {
 
 exports.uploadMedia = async (req, res) => {
     try {
-        const path = `${req.body.category}/${req.body.name}`;
+        const { name } = Category.findById(req.body.category);
+        const path = `${name}/${req.body.name}`;
         const urls = await uploadFiles(req, res, path);
         res.status(200).json(urls);
     } catch (error) {
@@ -83,7 +94,6 @@ exports.updateProduct = async (req, res) => {
         const { slug } = req.body;
         const newProductData = {
             ...req.body,
-            category: UpperCaseFirstLetter(req.body.category),
             slug: slugify(slug),
         };
         await Product.findByIdAndUpdate(req.params.id, newProductData, { new: true, runValidators: true });

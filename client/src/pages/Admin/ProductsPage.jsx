@@ -78,7 +78,7 @@ function applySortFilter(array, comparator, query) {
     return stabilizedThis.map((el) => el[0]);
 }
 
-export default function UserPage() {
+export default function ProductsPage() {
     const user = useSelector((state) => state.auth.login.currentUser);
     const dispatch = useDispatch();
     let axiosJWT = createAxios(user, dispatch, loginSuccess);

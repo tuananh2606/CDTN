@@ -2,15 +2,13 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { NavLink } from 'react-router-dom';
 
-import { Logo } from '../components/Icon';
+import HeaderOnly from './HeaderOnly';
+import FooterOnly from './FooterOnly';
 
 const UserPageLayout = ({ children }) => {
     return (
-        <>
-            <UserHeader>
-                <div className="logo">
-                    <Logo width="100%" height="100%" />
-                </div>
+        <Layout>
+            <HeaderOnly>
                 <NavContainer>
                     <ul className="nav-list">
                         <NavItem>
@@ -27,9 +25,10 @@ const UserPageLayout = ({ children }) => {
                         </NavItem>
                     </ul>
                 </NavContainer>
-            </UserHeader>
-            <UserContent>{children}</UserContent>
-        </>
+            </HeaderOnly>
+            <main className="content">{children}</main>
+            <FooterOnly />
+        </Layout>
     );
 };
 
@@ -39,33 +38,16 @@ UserPageLayout.propTypes = {
 
 export default UserPageLayout;
 
-const UserHeader = styled.header`
-    position: fixed;
-    z-index: 101;
-    inset: 0;
-    background-color: #fff;
-    width: 100%;
+const Layout = styled.div`
     display: flex;
-    height: 4.5rem;
-    box-shadow: inset 0 -1px 0 var(--border-color);
-    justify-content: space-between;
-
-    .logo {
-        height: 100%;
-        width: 12rem;
-        padding-left: 3.3333333333333335vw;
-        @media only screen and (min-width: 64em) {
-            padding-left: 3.125vw;
-        }
-        @media only screen and (min-width: 48em) {
-            padding-left: 3.125vw;
-        }
-
-        @media only screen and (min-width: 1024px) {
-            width: 9.4375rem;
-        }
+    flex-direction: column;
+    min-height: 100vh;
+    height: 100%;
+    .content {
+        flex: 1 0 auto;
     }
 `;
+
 const NavContainer = styled.nav`
     .nav-list {
         height: 100%;
@@ -88,8 +70,4 @@ const NavItem = styled.li`
             box-shadow: inset 0 -4px 0 0 #19110b;
         }
     }
-`;
-
-const UserContent = styled.main`
-    margin-top: 4.5rem;
 `;

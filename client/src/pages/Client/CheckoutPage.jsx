@@ -1,29 +1,17 @@
 import styled from 'styled-components';
 import { useState } from 'react';
-import {
-    Box,
-    Button,
-    Stepper,
-    Step,
-    Select,
-    StepLabel,
-    MenuItem,
-    NativeSelect,
-    StepContent,
-    Paper,
-    Typography,
-    FormControl,
-    InputLabel,
-} from '@mui/material';
+import { Box, Button, StepLabel } from '@mui/material';
 import { Form, Formik } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
-import { loginSuccess } from '../../redux/authSlice';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import orderApis from '../../apis/orderApis';
+import { loginSuccess } from '../../redux/authSlice';
 import { checkoutValidationSchema } from '../../components/forms/checkout/FormModels';
 import { ShippingAddressForm, PaymentForm } from '../../components/forms/checkout';
-import { SignUpInfoForm1, SignUpInfoForm2, AccountActivationForm } from '../../components/forms/registration';
+import ReviewOrder from './ReviewOrder';
 
 const steps = ['Shipping Address', 'Payment', 'Review Your Order'];
 
@@ -46,8 +34,8 @@ function _renderStepContent(step) {
             return <ShippingAddressForm />;
         case 1:
             return <PaymentForm />;
-        // case 1:
-        //     return <PaymentForm />;
+        case 2:
+            return <ReviewOrder />;
         default:
             return <div>Not Found</div>;
     }
@@ -56,10 +44,19 @@ function _renderStepContent(step) {
 const CheckoutPage = () => {
     const [activeStep, setActiveStep] = useState(0);
     const currentValidationSchema = checkoutValidationSchema[activeStep];
+    const [totalPrice, setTotalPrice] = useState(0);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
 
+    const user = useSelector((state) => state.auth.login.currentUser);
     const cart = useSelector((state) => state.cart.shoppingCart);
+
+    const createOrderMutation = useMutation({
+        mutationFn: (data) => orderApis.createOrder(user?.accessToken, data),
+    });
+
+    console.log(cart);
 
     const totalSteps = () => {
         return steps.length;
@@ -74,14 +71,18 @@ const CheckoutPage = () => {
     async function _submitForm(values, actions) {
         await _sleep(1000);
         const newOrder = {
-            name: `${values.firstName} ${values.lastName}`,
-            addressLine1: values.addressLine1,
-            addressLine2: values.addressLine2,
-            city: values.city,
-            province: values.province,
-            phoneNumber: values.phoneNumber,
+            shippingInfo: {
+                name: `${values.firstName} ${values.lastName}`,
+                addressLine1: values.addressLine1,
+                addressLine2: values.addressLine2,
+                city: values.city,
+                province: values.province,
+                phoneNumber: values.phoneNumber,
+            },
+            orderItems: [...cart],
             payment: values.payment,
         };
+        //createOrderMutation(newOrder);
         console.log(newOrder);
         actions.setSubmitting(false);
     }
@@ -102,7 +103,11 @@ const CheckoutPage = () => {
 
     const calculatePriceTotal = () => {
         let initialValue = 0;
-        return cart.reduce((accumulator, { quantity, price }) => accumulator + quantity * price, initialValue);
+        const totalPrice = cart.reduce(
+            (accumulator, { quantity, price }) => accumulator + quantity * price,
+            initialValue,
+        );
+        return totalPrice;
     };
 
     const calcEstimatedTotal = () => {
@@ -140,18 +145,14 @@ const CheckoutPage = () => {
                                             display: 'flex',
                                             flexDirection: 'row',
                                             pt: 2,
+                                            px: '2rem',
                                         }}
                                     >
-                                        <Button
-                                            color="inherit"
-                                            disabled={activeStep === 0}
-                                            onClick={handleBack}
-                                            sx={{ mr: 1 }}
-                                        >
+                                        <Button color="inherit" disabled={activeStep === 0} onClick={handleBack}>
                                             Back
                                         </Button>
                                         <Box sx={{ flex: '1 1 auto' }} />
-                                        <StyledButton disabled={isSubmitting} type="submit" sx={{ mr: 1 }}>
+                                        <StyledButton disabled={isSubmitting} type="submit">
                                             {isLastStep ? 'Finish' : 'Next'}
                                         </StyledButton>
                                     </Box>
@@ -238,7 +239,7 @@ const CheckoutPage = () => {
                                                 </CartItemInfo>
                                                 <CartItemQP>
                                                     <span>QTY: {item.quantity}</span>
-                                                    <span className="qty">{'$ ' + item.price * item.quantity}</span>
+                                                    <span>{'$ ' + item.price * item.quantity}</span>
                                                 </CartItemQP>
                                             </CartItemContent>
                                         </CartItem>
@@ -269,6 +270,7 @@ const CheckoutPage = () => {
 
 export default CheckoutPage;
 const Wrapper = styled.div`
+    background-color: #fff;
     margin-top: var(--header-height);
 `;
 const Content = styled.div`
@@ -333,7 +335,9 @@ const StyledButton = styled(Button)`
 `;
 const OrderSummarySection = styled.section`
     width: 100%;
+    height: auto;
     padding: 1rem 1.5rem;
+    border: 1px solid var(--border-color);
     @media only screen and (min-width: 768px) {
         width: 345px;
     }

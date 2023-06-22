@@ -12,12 +12,16 @@ import productApis from '../../apis/productApis';
 
 const ProductDetails = () => {
     const size = useWindowSize();
+    const [description, setDescription] = useState([]);
     let { slug, code } = useParams();
     const dispatch = useDispatch();
 
     const { data, isLoading, error } = useQuery({
         queryKey: ['products'],
         queryFn: () => productApis.getProductDetails(slug, code),
+        onSuccess: (data) => {
+            setDescription(data.product.description.split(/[/]/g));
+        },
     });
 
     if (isLoading) return 'Loading...';
@@ -32,16 +36,11 @@ const ProductDetails = () => {
         '/images/frontview_img.png',
         '/images/frontview_img.png',
     ];
-    // if (size.width <= 1024) {
-    //     console.log(size.width);
-    // }
 
     const hanldleBuy = (product) => {
-        console.log(product);
         dispatch(addToCart(product));
     };
 
-    console.log(data);
     return (
         <>
             <StyledWrapper>
@@ -99,8 +98,23 @@ const ProductDetails = () => {
                                 Mua
                             </StyledButtonLink>
 
-                            <p>{data.product?.description}</p>
                             <h2>Thong tin san pham</h2>
+                            <StyledDesTop>
+                                {description &&
+                                    description.length > 0 &&
+                                    description.slice(0, 2).map((item, idx) => <span key={idx}>{item}</span>)}
+                            </StyledDesTop>
+
+                            <StyledDesBottom>
+                                {description &&
+                                    description.length > 0 &&
+                                    description.slice(2, -1).map((str, idx) => <li key={idx}>{str}</li>)}
+                            </StyledDesBottom>
+                            <p>
+                                {description &&
+                                    description.length > 0 &&
+                                    description.slice(-1).map((str, idx) => <span key={idx}>{str}</span>)}
+                            </p>
                         </StyledProductCard>
                     </StyledProductCardWrapper>
                 </StyledRight>
@@ -268,5 +282,19 @@ const StyledTabs = styled.div`
     }
     @media screen and (max-width: 768px) {
         padding: 1rem 2rem;
+    }
+`;
+const StyledDesTop = styled.p`
+    display: flex;
+    flex-direction: column;
+`;
+
+const StyledDesBottom = styled.ul`
+    columns: 2;
+    list-style: disc inside;
+    li {
+        letter-spacing: 0.025rem;
+        font-weight: 300;
+        line-height: 1.5rem;
     }
 `;

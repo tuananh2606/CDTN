@@ -1,5 +1,15 @@
 import { useEffect, useState } from 'react';
-import { Input, TextField, Button, Box, ImageList, ImageListItem, CardMedia, Stack } from '@mui/material';
+import {
+    TextField,
+    Button,
+    Box,
+    ImageList,
+    ImageListItem,
+    InputLabel,
+    MenuItem,
+    FormControl,
+    Select,
+} from '@mui/material';
 import styled from 'styled-components';
 import axios from 'axios';
 import { loginSuccess } from '../../../redux/authSlice';
@@ -22,13 +32,7 @@ const UpdateProductPage = () => {
         stock: 0,
         images: [],
     });
-    const [code, setCode] = useState('');
-    const [name, setName] = useState('');
-    const [description, setDescription] = useState('');
-    const [slug, setSlug] = useState('');
-    const [price, setPrice] = useState('');
-    // const [category, setCategory] = useState('');
-    const [stock, setStock] = useState('');
+    const [categories, setCategories] = useState([]);
     const [media, setMedia] = useState([]);
     const [images, setImages] = useState([]);
 
@@ -56,6 +60,19 @@ const UpdateProductPage = () => {
             setInfo(data);
         },
     });
+
+    const categoriesQuery = useQuery({
+        queryKey: ['categories'],
+        queryFn: () => adminApis.getAllCategories(axiosJWT, user?.accessToken),
+        onSuccess: (data) => {
+            setCategories(
+                data?.map((item, idx) => {
+                    return { name: item.name, id: item._id };
+                }),
+            );
+        },
+    });
+
     useEffect(() => {
         refetch();
         setInfo(data);
@@ -90,13 +107,11 @@ const UpdateProductPage = () => {
                 const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/v1/product/upload`, formData);
                 newProduct = {
                     ...info,
-                    category: info.category.charAt(0).toUpperCase() + info.category.slice(1).toLowerCase(),
                     images: [...data.images, ...response.data.images],
                 };
             } else {
                 newProduct = {
                     ...info,
-                    category: info.category.charAt(0).toUpperCase() + info.category.slice(1).toLowerCase(),
                 };
             }
             UpdateProductMutation.mutate(newProduct);
@@ -145,13 +160,31 @@ const UpdateProductPage = () => {
                     value={info?.price || ''}
                     onChange={(e) => setInfo({ ...info, price: e.target.value })}
                 />
-                <StyledTextInput
+                <FormControl fullWidth sx={{ mt: '1rem', mb: '0.5rem' }}>
+                    <InputLabel id="select-label">Category</InputLabel>
+                    <Select
+                        labelId="select-label"
+                        id="select"
+                        value={info?.category || ''}
+                        label="Category"
+                        onChange={(e) => setInfo({ ...info, category: e.target.value })}
+                    >
+                        {categories &&
+                            categories.length > 0 &&
+                            categories.map((item, idx) => (
+                                <MenuItem key={idx} value={item.id}>
+                                    {item.name}
+                                </MenuItem>
+                            ))}
+                    </Select>
+                </FormControl>
+                {/* <StyledTextInput
                     type="text"
                     label="Category"
                     name="category"
                     value={info?.category || ''}
                     onChange={(e) => setInfo({ ...info, category: e.target.value })}
-                />
+                /> */}
                 <StyledTextInput
                     type="text"
                     label="Stock"
