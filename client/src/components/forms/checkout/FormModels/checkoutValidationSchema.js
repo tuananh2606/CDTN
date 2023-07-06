@@ -10,7 +10,8 @@ export default [
         addressLine1: Yup.string().required('Address Line 1 is required').min(2, 'Must be 4 characters or more'),
         // addressLine2: Yup.string().min(2, 'Must be 4 characters or more'),
         city: Yup.string().required('City is required').min(2, 'Must be 4 characters or more'),
-        province: Yup.string().required('Province is required').min(2, 'Must be 4 characters or more'),
+        district: Yup.string().required('District is required').min(2, 'Must be 4 characters or more'),
+        country: Yup.string().required('Country is required').min(2, 'Must be 4 characters or more'),
         // phoneNumber: Yup.string().phone().required('A phone number is required'),
     }),
 ];

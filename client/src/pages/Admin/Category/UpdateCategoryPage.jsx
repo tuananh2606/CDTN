@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Input, TextField, Button, Box, ImageList, ImageListItem, CardMedia, Stack } from '@mui/material';
+import { TextField, Button, Box, ImageList, ImageListItem, CardMedia, Stack } from '@mui/material';
 import styled from 'styled-components';
 import axios from 'axios';
 import { loginSuccess } from '../../../redux/authSlice';
@@ -14,7 +14,10 @@ import { useNavigate } from 'react-router-dom';
 const UpdateCategoryPage = () => {
     const [info, setInfo] = useState();
     const [name, setName] = useState('');
-    const [media, setMedia] = useState([]);
+    const [media, setMedia] = useState({
+        images: [],
+        videos: [],
+    });
     const [images, setImages] = useState([]);
     const [videos, setVideos] = useState([]);
 
@@ -25,25 +28,33 @@ const UpdateCategoryPage = () => {
 
     let axiosJWT = createAxios(user, dispatch, loginSuccess);
 
-    const queryClient = useQueryClient();
-
-    const UpdateCateMutation = useMutation({
+    const updateCateMutation = useMutation({
         mutationFn: (category) => adminApis.updateCategory(axiosJWT, user?.accessToken, state, category),
         onSuccess: () => {
             navigate('/admin/categories');
-            queryClient.invalidateQueries({ queryKey: ['categories'] });
         },
+    });
+    const deleteImagesMutation = useMutation({
+        mutationFn: (data) => adminApis.deleteImages(axiosJWT, user?.accessToken, data),
+        // onSuccess: () => {
+        //     navigate('/admin/categories');
+        // },
+    });
+    const deleteVideosMutation = useMutation({
+        mutationFn: (data) => adminApis.deleteVideos(axiosJWT, user?.accessToken, data),
+        // onSuccess: () => {
+        //     navigate('/admin/categories');
+        // },
     });
 
     const { isLoading, isError, data, error } = useQuery({
         queryKey: ['category', state],
         queryFn: () => adminApis.getCategoryById(axiosJWT, user?.accessToken, state),
-        staleTime: Infinity,
-        enable: false,
+        // staleTime: Infinity,
+        // enable: false,
         onSuccess: (data) => {
             setName(data.name);
             setInfo(data);
-            // setFormState(data);
         },
     });
 
@@ -55,27 +66,40 @@ const UpdateCategoryPage = () => {
         return <span>Error: {error.message}</span>;
     }
 
-    const handleDeleteImage = (idx) => {
-        setMedia([...media, info?.images[idx].public_id]);
-        let imagesArr = info?.images;
-        imagesArr = imagesArr.splice(idx, 1);
+    const handleDeleteImage = (publicId) => {
+        setMedia((prev) => ({ ...prev, images: [...media.images, publicId] }));
+        setInfo((prev) => ({ ...prev, images: info.images.filter((item) => item.public_id !== publicId) }));
+        const deletedAsset = {
+            publicId: publicId,
+        };
+        // deleteImagesMutation.mutate(deletedAsset);
+        // setMedia((prev) => [...prev, info?.images[idx].public_id]);
     };
-    const handleDeleteVideos = (idx, name) => {
-        const deletedVideo =
-            name === 'mobile' ? info?.videos.mobile[idx].public_id : info?.videos.desktop_tablet[idx].public_id;
-        setMedia([...media, deletedVideo]);
-        let videosDTArr = info?.videos.desktop_tablet;
-        let videosMobileArr = info?.videos.mobile;
+    const handleDeleteVideos = (publicId, name) => {
+        setMedia((prev) => ({ ...prev, videos: [...media.videos, publicId] }));
         if (name === 'mobile') {
-            videosMobileArr = videosMobileArr.splice(idx, 1);
-            console.log(videosMobileArr);
+            setInfo((prev) => ({
+                ...prev,
+                videos: {
+                    desktop_tablet: [...info.videos.desktop_tablet],
+                    mobile: info.videos.mobile.filter((item) => item.public_id !== publicId),
+                },
+            }));
         } else {
-            videosDTArr = videosDTArr.splice(idx, 1);
-            console.log(videosDTArr);
+            setInfo((prev) => ({
+                ...prev,
+                videos: {
+                    desktop_tablet: info.videos.desktop_tablet.filter((item) => item.public_id !== publicId),
+                    mobile: [...info.videos.mobile],
+                },
+            }));
         }
     };
 
-    async function _handleSubmit(e) {
+    console.log(media);
+    console.log(info);
+
+    const _handleSubmit = async (e) => {
         e.preventDefault();
         let formData = new FormData();
         formData.append('name', name);
@@ -86,20 +110,45 @@ const UpdateCategoryPage = () => {
             formData.append('videos', item);
         });
         try {
-            const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/v1/category/upload`, formData);
-            const newCate = {
-                name: name.charAt(0).toUpperCase() + name.slice(1).toLowerCase(),
-                images: [...data.images, ...response.data.images],
-                videos: {
-                    desktop_tablet: [...data.videos.desktop_tablet, ...response.data.videos.desktop_tablet],
-                    mobile: [...data.videos.mobile, ...response.data.videos.mobile],
-                },
-            };
-            UpdateCateMutation.mutate(newCate);
+            const check = formData.getAll('images').length > 0 || formData.getAll('videos').length > 0;
+            if (media) {
+                if (media.images.length > 0) {
+                    media.images.forEach((publicId) => {
+                        deleteImagesMutation.mutate({ publicId: publicId });
+                    });
+                }
+                if (media.videos.length > 0) {
+                    media.videos.forEach((publicId) => {
+                        deleteVideosMutation.mutate({ publicId: publicId });
+                    });
+                }
+            }
+            if (check) {
+                const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/v1/category/upload`, formData);
+                const newCate = {
+                    name: name.charAt(0).toUpperCase() + name.slice(1).toLowerCase(),
+                    images: [...info.images, ...response.data.images],
+                    videos: {
+                        desktop_tablet: [...info.videos.desktop_tablet, ...response.data.videos.desktop_tablet],
+                        mobile: [...info.videos.mobile, ...response.data.videos.mobile],
+                    },
+                };
+                updateCateMutation.mutate(newCate);
+            } else {
+                const newCate = {
+                    name: name.charAt(0).toUpperCase() + name.slice(1).toLowerCase(),
+                    images: [...info.images],
+                    videos: {
+                        desktop_tablet: [...info.videos.desktop_tablet],
+                        mobile: [...info.videos.mobile],
+                    },
+                };
+                updateCateMutation.mutate(newCate);
+            }
         } catch (error) {
             console.log(error);
         }
-    }
+    };
     return (
         <Box sx={{ padding: 2 }}>
             <Form onSubmit={_handleSubmit} encType="multipart/form-data">
@@ -116,7 +165,7 @@ const UpdateCategoryPage = () => {
                                     alt="Anh"
                                     loading="lazy"
                                 />
-                                <Button onClick={() => handleDeleteImage(idx)}>Delete</Button>
+                                <Button onClick={() => handleDeleteImage(item.public_id)}>Delete</Button>
                             </ImageListItem>
                         ))}
                     </ImageList>
@@ -135,7 +184,7 @@ const UpdateCategoryPage = () => {
                                 controls
                                 src={item.url}
                             />
-                            <Button onClick={() => handleDeleteVideos(idx, 'desktop_tablet')}>Delete</Button>
+                            <Button onClick={() => handleDeleteVideos(item.public_id, 'desktop_tablet')}>Delete</Button>
                         </Box>
                     ))}
 
@@ -148,7 +197,7 @@ const UpdateCategoryPage = () => {
                                 controls
                                 src={item.url}
                             />
-                            <Button onClick={() => handleDeleteVideos(idx, 'mobile')}>Delete</Button>
+                            <Button onClick={() => handleDeleteVideos(item.public_id, 'mobile')}>Delete</Button>
                         </Box>
                     ))}
                 </Stack>

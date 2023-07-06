@@ -1,6 +1,6 @@
 import ThemeProvider from './theme';
 import { Fragment } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 
 import MainLayout from './layouts/MainLayout';
@@ -8,6 +8,7 @@ import { publicRoutes, privateRoutes, protectedRoutes } from './routes';
 import DashboardLayout from './layouts/Admin/dashboard/DashboardLayout';
 import ProtectedRoutes from './routes/ProtectedRoutes';
 import PrivateRoutes from './routes/PrivateRoutes';
+import NotFoundPage from './pages/NotFoundPage';
 
 function App() {
     return (
@@ -83,6 +84,8 @@ function App() {
                                     );
                                 })}
                             </Route>
+                            <Route path="notfound" element={<NotFoundPage />} />
+                            <Route path="*" element={<Navigate to="/notfound" replace />} />
                         </Routes>
                     </div>
                 </ThemeProvider>

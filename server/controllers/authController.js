@@ -1,7 +1,11 @@
-const User = require('../models/userModel');
+const { User, validate } = require('../models/userModel');
+const Token = require('../models/tokenModel');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const { v4: uuidv4 } = require('uuid');
+const Joi = require('joi');
 const { OAuth2Client } = require('google-auth-library');
+const { sendEmail } = require('../utils/sendEmail');
 
 const oAuth2Client = new OAuth2Client(process.env.CLIENT_ID, process.env.CLIENT_SECRET, 'postmessage');
 
@@ -35,12 +39,15 @@ const generateRefreshToken = (user) => {
 
 exports.registerUser = async (req, res) => {
     try {
+        const { error } = validate(req.body);
+        if (error) return res.status(400).send(error.details[0].message);
+
         const salt = await bcrypt.genSalt(10);
         const hashed = await bcrypt.hash(req.body.password, salt);
-
         //Create new user
         const newUser = new User({
-            name: req.body.name,
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
             email: req.body.email,
             password: hashed,
         });
@@ -49,18 +56,18 @@ exports.registerUser = async (req, res) => {
         const user = await newUser.save();
         res.status(200).json(user);
     } catch (error) {
-        return res.status(500).json(error);
+        return res.status(500).send(error);
     }
 };
 exports.userLogin = async (req, res) => {
     try {
         const user = await User.findOne({ email: req.body.email });
         if (!user) {
-            return res.status(404).json('Wrong email!');
+            return res.status(401).send('Wrong email or password');
         }
         const validPassword = await bcrypt.compare(req.body.password, user.password);
         if (!validPassword) {
-            return res.status(404).json('Wrong password!');
+            return res.status(401).send('Wrong email or password');
         }
         if (user && validPassword) {
             const accessToken = generateAccessToken(user);
@@ -151,4 +158,69 @@ exports.userLogout = async (req, res) => {
     res.clearCookie('refreshToken');
     refreshTokens = refreshTokens.filter((token) => token !== req.cookies.refreshToken);
     res.status(200).json('Logged out');
+};
+
+exports.sendEmailResetPassword = async (req, res) => {
+    try {
+        const schema = Joi.object({ email: Joi.string().email().required() });
+        const { error } = schema.validate(req.body);
+        if (error) return res.status(400).send(error.details[0].message);
+
+        const user = await User.findOne({ email: req.body.email });
+        if (!user) return res.status(400).send("user with given email doesn't exist");
+
+        let token = await Token.findOne({ userId: user._id });
+        if (!token) {
+            token = await new Token({
+                userId: user._id,
+                token: uuidv4(),
+            }).save();
+        }
+
+        const link = `${process.env.BASE_CLIENT_URL}/reset-your-password/${user._id}?token=${token.token}`;
+        await sendEmail(user.email, 'Password reset', link, 'resetPassword', user.firstName);
+
+        res.send('password reset link sent to your email account');
+    } catch (error) {
+        res.send('An error occured');
+        console.log(error);
+    }
+};
+
+exports.passwordReset = async (req, res) => {
+    try {
+        const schema = Joi.object({
+            password: Joi.string()
+                .pattern(
+                    new RegExp(
+                        '(?=[A-Za-z0-9!#$&()*+,-.:;<=>?%@[^_{|}~]+$)^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!#$&()*+,-.:;<=>%?@[^_{|}~])(?=.{8,}).*$',
+                    ),
+                )
+                .required()
+                .min(8)
+                .max(20),
+        });
+        const { error } = schema.validate(req.body);
+        if (error) return res.status(400).send(error.details[0].message);
+
+        const user = await User.findById(req.params.userId);
+        if (!user) return res.status(400).send('invalid link or expired');
+
+        const token = await Token.findOne({
+            userId: user._id,
+            token: req.query.token,
+        });
+        if (!token) return res.status(400).send('Invalid link or expired');
+
+        const salt = await bcrypt.genSalt(10);
+        const hashed = await bcrypt.hash(req.body.password, salt);
+        user.password = hashed;
+        await user.save();
+        await token.deleteOne();
+
+        res.send('password reset sucessfully.');
+    } catch (error) {
+        res.send('An error occured');
+        console.log(error);
+    }
 };

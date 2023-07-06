@@ -1,8 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { loginUser } from './apiRequest';
 
 const authSlice = createSlice({
     name: 'auth',
     initialState: {
+        errorMessage: '',
         login: {
             currentUser: null,
             isFetching: false,
@@ -50,6 +52,25 @@ const authSlice = createSlice({
         logoutFailed: (state) => {
             state.register.isFetching = false;
             state.register.error = true;
+            state.register.errorMessage = '';
+        },
+    },
+    extraReducers: {
+        // login user
+        [loginUser.pending]: (state) => {
+            state.login.isFetching = true;
+            state.errorMessage = '';
+        },
+        [loginUser.fulfilled]: (state, { payload }) => {
+            state.login.isFetching = false;
+            state.login.error = false;
+            state.login.currentUser = payload;
+            state.errorMessage = '';
+        },
+        [loginUser.rejected]: (state, { payload }) => {
+            state.login.isFetching = false;
+            state.login.error = true;
+            state.errorMessage = payload;
         },
     },
 });

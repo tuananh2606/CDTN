@@ -1,4 +1,5 @@
 const cloudinary = require('../cloudinary');
+const cloudinaryApi = require('cloudinary').v2;
 const fs = require('fs');
 
 exports.uploadFiles = async (req, res, pathImage) => {
@@ -29,4 +30,20 @@ exports.uploadFiles = async (req, res, pathImage) => {
         }
     }
     return urls;
+};
+exports.deleteImages = async (req, res) => {
+    try {
+        await cloudinaryApi.api.delete_resources([req.body.publicId], { type: 'upload', resource_type: 'image' });
+        return res.status(200).send('Delete Successfully');
+    } catch (error) {
+        return res.status(500).send('Delete Error');
+    }
+};
+exports.deleteVideos = async (req, res) => {
+    try {
+        await cloudinaryApi.api.delete_resources([req.body.publicId], { type: 'upload', resource_type: 'video' });
+        return res.status(200).send('Delete Successfully');
+    } catch (error) {
+        return res.status(500).send('Delete Error');
+    }
 };

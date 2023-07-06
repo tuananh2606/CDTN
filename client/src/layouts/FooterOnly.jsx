@@ -44,6 +44,10 @@ const Wrapper = styled.footer`
         display: flex;
         align-items: center;
         justify-content: space-evenly;
+        flex-wrap: wrap;
+        li {
+            margin-top: 0.5rem;
+        }
         li > a {
             color: #fff;
             text-decoration: none;

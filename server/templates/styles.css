@@ -1,0 +1,15 @@
+.wrapper {
+    display: flex;
+    justify-content: center;
+}
+.container {
+    border: 1px solid #eaeaea;
+    padding: 16px 20px;
+}
+.container > p:first-child {
+    font-size: 16px;
+}
+.container > p {
+    margin: 7px 0;
+    font-size: 14px;
+}

@@ -7,3 +7,5 @@ export { default as InputFileField } from './InputFileField';
 export { default as PhoneNumberField } from './PhoneNumberField';
 export { default as TabPanel } from './TabPanel';
 export { default as RadioButtonGroup } from './RadioButtonGroup';
+export { default as LoadingBackdrop } from './LoadingBackdrop';
+export { default as ExpandableTableRow } from './ExpandableTableRow';

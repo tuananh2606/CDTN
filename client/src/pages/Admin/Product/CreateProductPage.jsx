@@ -56,14 +56,14 @@ const CreateProductPage = ({ setCreatePageShow }) => {
         try {
             let newProduct = {};
             if (check) {
-                const { data } = await axios.post(`${import.meta.env.VITE_BASE_URL}/v1/product/upload`, formData);
+                const { data } = await axios.post(`${import.meta.env.VITE_BASE_URL}/v1/product/upload/`, formData);
 
                 newProduct = {
                     code,
                     name,
                     slug,
                     description,
-                    category: category.charAt(0).toUpperCase() + category.slice(1).toLowerCase(),
+                    category,
                     price,
                     stock,
                     images: data.images,

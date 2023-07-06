@@ -1,12 +1,17 @@
 const mongoose = require('mongoose');
 const { isEmail } = require('validator');
+const Joi = require('joi');
 const userSchema = new mongoose.Schema(
     {
         googleId: {
             type: String,
             default: null,
         },
-        name: {
+        firstName: {
+            type: String,
+            require: true,
+        },
+        lastName: {
             type: String,
             require: true,
         },
@@ -34,4 +39,22 @@ const userSchema = new mongoose.Schema(
     { timestamps: true },
 );
 
-module.exports = mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema);
+
+const validate = (user) => {
+    const schema = Joi.object({
+        firstName: Joi.string().required(),
+        lastName: Joi.string().required(),
+        email: Joi.string().email().required(),
+        password: Joi.string()
+            .pattern(
+                new RegExp('(?=[A-Za-z0-9@#$%^&+!=]+$)^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&+!=])(?=.{8,}).*$'),
+            )
+            .required()
+            .min(8)
+            .max(20),
+    });
+    return schema.validate(user);
+};
+
+module.exports = { User, validate };

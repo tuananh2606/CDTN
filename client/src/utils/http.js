@@ -29,12 +29,12 @@ export const createAxios = (user, dispatch, stateSuccess) => {
                 //     localStorage.clear();
                 // }
                 console.log(data);
-                const refreshUser = {
-                    ...user,
-                    accessToken: data.accessToken,
-                };
-                console.log(refreshUser);
-                dispatch(stateSuccess(refreshUser));
+                // const refreshUser = {
+                //     ...user,
+                //     accessToken: data.accessToken,
+                // };
+                // console.log(refreshUser);
+                // dispatch(stateSuccess(refreshUser));
                 config.headers['token'] = 'Bearer ' + data.accessToken;
             }
             return config;

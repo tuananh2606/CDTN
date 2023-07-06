@@ -59,7 +59,7 @@ exports.getProductById = async (req, res) => {
 
 exports.uploadMedia = async (req, res) => {
     try {
-        const { name } = Category.findById(req.body.category);
+        const { name } = await Category.findById(req.body.category);
         const path = `${name}/${req.body.name}`;
         const urls = await uploadFiles(req, res, path);
         res.status(200).json(urls);
@@ -105,7 +105,8 @@ exports.updateProduct = async (req, res) => {
 
 exports.deleteProduct = async (req, res) => {
     try {
-        await cloudinary.deleteFolder(`Images/${req.body.category}/${req.body.name}`);
+        const { name } = await Category.findById(req.body.category);
+        await cloudinary.deleteFolder(`Images/${name}/${req.body.name}`);
         await Product.findByIdAndDelete(req.params.id);
         return res.status(200).json('Delete Successfully!');
     } catch (error) {

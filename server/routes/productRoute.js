@@ -20,8 +20,8 @@ router.get('/:slug/:code', getProductDetails);
 router.post('/upload', upload.fields([{ name: 'images', maxCount: 12 }]), uploadMedia);
 router.get('/:id', getProductById);
 
-router.post('/', createNewProduct);
-router.put('/:id', updateProduct);
-router.delete('/:id', deleteProduct);
+router.post('/', middlewareAuth.isAuthenticatedUser, middlewareAuth.authorizeRoles, createNewProduct);
+router.put('/:id', middlewareAuth.isAuthenticatedUser, middlewareAuth.authorizeRoles, updateProduct);
+router.delete('/:id', middlewareAuth.isAuthenticatedUser, middlewareAuth.authorizeRoles, deleteProduct);
 
 module.exports = router;

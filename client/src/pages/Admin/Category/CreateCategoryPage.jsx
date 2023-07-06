@@ -8,7 +8,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import adminApis from '../../../apis/adminApis';
 import { createAxios } from '../../../utils/http';
 
-const CreateCategoryPage = ({ setCreatePageShow }) => {
+const CreateCategoryPage = () => {
     const [name, setName] = useState('');
     const [images, setImages] = useState([]);
     const [videos, setVideos] = useState([]);
@@ -54,7 +54,6 @@ const CreateCategoryPage = ({ setCreatePageShow }) => {
             }
 
             createCateMutation.mutate(newCate);
-            setCreatePageShow(false);
         } catch (error) {
             console.log(error);
         }

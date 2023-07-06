@@ -23,6 +23,7 @@
     "axios": "^1.4.0",
     "change-case": "^4.1.2",
     "date-fns": "^2.30.0",
+    "dayjs": "^1.11.8",
     "formik": "^2.2.9",
     "jwt-decode": "^3.1.2",
     "localforage": "^1.10.0",

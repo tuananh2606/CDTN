@@ -8,7 +8,8 @@ import FormLayout from '../../components/forms/FormLayout';
 
 const ReviewOrder = () => {
     const { values: formValues } = useFormikContext();
-    const { firstName, lastName, addressLine1, addressLine2, province, city, payment, phoneNumber } = formValues;
+    const { firstName, lastName, addressLine1, addressLine2, district, city, country, payment, phoneNumber } =
+        formValues;
     const cart = useSelector((state) => state.cart.shoppingCart);
     const dispatch = useDispatch();
     return (
@@ -20,8 +21,9 @@ const ReviewOrder = () => {
                 <Typography gutterBottom>{`${firstName} ${lastName}`}</Typography>
                 <Typography gutterBottom>{`${addressLine1}`}</Typography>
                 <Typography gutterBottom>{`${addressLine2}`}</Typography>
-                <Typography gutterBottom>{`${province}`}</Typography>
+                <Typography gutterBottom>{`${district}`}</Typography>
                 <Typography gutterBottom>{`${city}`}</Typography>
+                <Typography gutterBottom>{`${country}`}</Typography>
                 <Typography gutterBottom>{`${phoneNumber}`}</Typography>
             </Grid>
             <Typography variant="h6" gutterBottom>

@@ -5,6 +5,7 @@ import { IoCloseOutline, IoChevronForward } from 'react-icons/io5';
 import { useQuery, useMutation, QueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 
+import useWindowSize from '../../hooks/useWindowSize';
 import categoryApis from '../../apis/categoryApis';
 import LevelMenu from './LevelMenu';
 
@@ -12,6 +13,8 @@ const MegaMenu = ({ navToggle, setNavToggle }, ref) => {
     // useImperativeHandle(ref, () => ({
     //     resetMenu,
     // }));
+
+    const size = useWindowSize();
 
     const queryClient = new QueryClient();
     const { data, isLoading, error } = useQuery({
@@ -99,6 +102,13 @@ const MegaMenu = ({ navToggle, setNavToggle }, ref) => {
                         );
                     })}
                 </ul>
+                {size.width < 768 && (
+                    <MegaMenuContent>
+                        <li>Wishlist</li>
+                        <li>User</li>
+                        <li>Log out</li>
+                    </MegaMenuContent>
+                )}
             </NavigationWrapper>
         </nav>
     );
@@ -198,13 +208,29 @@ const MegaMenuWrapper = styled.div`
         }
     }
 `;
-const MegaMenuContent = styled.div`
-    position: absolute;
-    inset: 0 0 0 100%;
-    height: 100%;
+
+const MegaMenuContent = styled.ul`
+    border-top: 1px solid var(--border-color);
     width: 100%;
-    z-index: 99999;
-    /* opacity: ${(props) => (props.lvlMenuToggle ? '1' : '0')};
-    visibility: ${(props) => (props.lvlMenuToggle ? 'visible' : 'hidden')}; */
-    background-color: #fff;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 2rem 0 !important;
+    li {
+        list-style: none;
+        font-size: 1rem;
+        margin: 0.5rem 0;
+        padding: 0 var(--header-padding-x);
+    }
 `;
+
+// const MegaMenuContent = styled.div`
+//     position: absolute;
+//     inset: 0 0 0 100%;
+//     height: 100%;
+//     width: 100%;
+//     z-index: 99999;
+//     /* opacity: ${(props) => (props.lvlMenuToggle ? '1' : '0')};
+//     visibility: ${(props) => (props.lvlMenuToggle ? 'visible' : 'hidden')}; */
+//     background-color: #fff;
+// `;

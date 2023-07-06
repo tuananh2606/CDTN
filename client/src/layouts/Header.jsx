@@ -127,7 +127,6 @@ const Header = () => {
                                 <BsHandbag className="cart-icon" />
                                 {calcTotalQuantity() > 0 && <span>{calcTotalQuantity()}</span>}
                             </Link>
-
                             <BiUser size={18} onClick={handleUtilityCotent} />
                         </div>
                     </IconContext.Provider>
@@ -240,8 +239,9 @@ const NavBarTop = styled.div`
         .nav-right__icons {
             cursor: pointer;
             margin: 0 0.5rem;
-            @media (max-width: 768px) {
-                display: none;
+            display: none;
+            @media (min-width: 768px) {
+                display: block;
             }
         }
         > *:first-child {

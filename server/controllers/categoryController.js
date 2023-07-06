@@ -75,7 +75,6 @@ exports.getCategoryById = async (req, res) => {
 //Create category
 exports.createCategory = async (req, res) => {
     try {
-        console.log(req.body);
         const categoryObj = {
             name: req.body.name,
             slug: slugify(req.body.name),

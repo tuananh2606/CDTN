@@ -1,7 +1,14 @@
 const adminApis = {
     //Users
-    getAllUsers: async (req, res, next) => {
-        return;
+    getAllUsers: async (axiosJWT, accessToken) => {
+        try {
+            const response = await axiosJWT.get('/v1/user', {
+                headers: { token: `Bearer ${accessToken}` },
+            });
+            return response.data;
+        } catch (error) {
+            console.log(error);
+        }
     },
     getUser: async (axiosJWT, accessToken, _id) => {
         try {
@@ -13,14 +20,21 @@ const adminApis = {
             console.log(error);
         }
     },
-    createUser() {
-        return;
-    },
-    updateUser: async (axiosJWT, accessToken, data) => {
-        const { id, updateUser } = data;
-        console.log(data);
+    createUser: async (axiosJWT, accessToken, data) => {
         try {
-            const response = await axiosJWT.put('/v1/user/' + id, updateUser, {
+            const response = await axiosJWT.post('/v1/user', data, {
+                headers: { token: `Bearer ${accessToken}` },
+            });
+            return response.data;
+        } catch (error) {
+            console.log(error);
+            return error;
+        }
+    },
+    updateUser: async (axiosJWT, accessToken, body) => {
+        try {
+            const { id, data } = body;
+            const response = await axiosJWT.put('/v1/user/' + id, data, {
                 headers: { token: `Bearer ${accessToken}` },
             });
             return response.data;
@@ -185,6 +199,49 @@ const adminApis = {
                     headers: { token: `Bearer ${accessToken}` },
                 },
             );
+            return response.data;
+        } catch (error) {
+            console.log(error);
+        }
+    },
+    //Orders
+    getAllOrders: async (axiosJWT, accessToken) => {
+        try {
+            const response = await axiosJWT.get('/v1/order/', {
+                headers: { token: `Bearer ${accessToken}` },
+            });
+            return response.data;
+        } catch (error) {
+            console.log(error);
+        }
+    },
+    deleteOrder: async (axiosJWT, accessToken, _id) => {
+        try {
+            const response = await axiosJWT.delete('/v1/order/' + _id, {
+                headers: { token: `Bearer ${accessToken}` },
+            });
+            return response.data;
+        } catch (error) {
+            console.log(error);
+        }
+    },
+
+    //Assets
+    deleteImages: async (axiosJWT, accessToken, data) => {
+        try {
+            const response = await axiosJWT.post('/v1/assets/delete-images', data, {
+                headers: { token: `Bearer ${accessToken}` },
+            });
+            return response.data;
+        } catch (error) {
+            console.log(error);
+        }
+    },
+    deleteVideos: async (axiosJWT, accessToken, data) => {
+        try {
+            const response = await axiosJWT.post('/v1/assets/delete-videos', data, {
+                headers: { token: `Bearer ${accessToken}` },
+            });
             return response.data;
         } catch (error) {
             console.log(error);

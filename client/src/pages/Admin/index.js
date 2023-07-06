@@ -1,4 +1,9 @@
 export { default as DashboardAppPage } from './DashboardAppPage';
-export { default as ProductsPage } from './ProductsPage';
-export { default as UserPage } from './UserPage';
-export { default as CategoriesPage } from './CategoriesPage';
+export { default as ProductsPage } from './Product/ProductsPage';
+export { default as UserPage } from './User/UserPage';
+export { default as CreateUserPage } from './User/CreateUserPage';
+export { default as UpdateUserPage } from './User/UpdateUserPage';
+export { default as CategoriesPage } from './Category/CategoriesPage';
+export { default as CreateCategoryPage } from './Category/CreateCategoryPage';
+export { default as OrdersPage } from './Order/OrdersPage';
+export { default as CreateOrderPage } from './Order/CreateOrderPage';

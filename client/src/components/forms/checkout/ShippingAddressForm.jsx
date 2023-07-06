@@ -15,8 +15,9 @@ const ShippingAddressForm = () => {
             <InputField name="addressLine2" label="Address Line 2" type="text" height={54} />
             <Stack direction="row" spacing={2} sx={{ mt: 3 }}>
                 <InputField name="city" label="City" type="text" height={54} required />
-                <InputField name="province" label="Province" type="text" height={54} required />
+                <InputField name="district" label="District" type="text" height={54} required />
             </Stack>
+            <InputField name="country" label="Country" type="text" height={54} required />
             <PhoneNumberField
                 name="phoneNumber"
                 type="tel"

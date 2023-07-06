@@ -1,21 +1,21 @@
 const mongoose = require('mongoose');
-
 const orderSchema = new mongoose.Schema(
     {
+        orderId: {
+            type: String,
+        },
         shippingInfo: {
             name: {
                 type: String,
                 required: true,
             },
-            address: [
-                {
-                    addressLine1: {
-                        type: String,
-                        required: true,
-                    },
-                    addressLine2: String,
+            address: {
+                addressLine1: {
+                    type: String,
+                    required: true,
                 },
-            ],
+                addressLine2: String,
+            },
             city: {
                 type: String,
                 required: true,
@@ -36,33 +36,11 @@ const orderSchema = new mongoose.Schema(
                 required: true,
             },
         },
-        orderItems: [
-            {
-                name: {
-                    type: String,
-                    required: true,
-                },
-                price: {
-                    type: Number,
-                    required: true,
-                },
-                quantity: {
-                    type: Number,
-                    required: true,
-                },
-                image: {
-                    type: String,
-                    required: true,
-                },
-                product: {
-                    type: mongoose.Schema.Types.ObjectId,
-                    ref: 'Product',
-                    required: true,
-                },
-            },
-        ],
+        orderItems: {
+            type: Array,
+        },
         user: {
-            type: mongoose.Schema.Types.ObjectId,
+            type: mongoose.SchemaTypes.ObjectId,
             ref: 'User',
             required: true,
         },
@@ -79,6 +57,7 @@ const orderSchema = new mongoose.Schema(
         },
         paidAt: {
             type: Date,
+            default: Date.now(),
             required: true,
         },
         totalPrice: {
@@ -96,5 +75,4 @@ const orderSchema = new mongoose.Schema(
     },
     { timestamps: true },
 );
-
 module.exports = mongoose.model('Order', orderSchema);

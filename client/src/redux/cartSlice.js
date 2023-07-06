@@ -45,9 +45,12 @@ const cartSlice = createSlice({
             total = parseFloat(total.toFixed(2));
             console.log(total);
         },
+        emptyCart: (state) => {
+            state.shoppingCart = [];
+        },
     },
 });
 
-export const { addToCart, removeFromCart, updateCartItem, getEstimatedTotal } = cartSlice.actions;
+export const { addToCart, removeFromCart, updateCartItem, getEstimatedTotal, emptyCart } = cartSlice.actions;
 
 export default cartSlice.reducer;
