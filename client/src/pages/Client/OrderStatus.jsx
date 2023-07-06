@@ -33,8 +33,7 @@ const OrderStatus = () => {
         if (vnp_ResponseCode === '00') {
             setMessage('paymentSuccess');
             updateOrderMutation.mutate(orderId);
-        }
-        if (state.paymentMethod === 'ttknh') {
+        } else if (state && state.paymentMethod === 'ttknh') {
             setMessage('paymentSuccess');
         }
     }, []);

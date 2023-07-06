@@ -35,7 +35,6 @@ const InputField = (props, ref) => {
 
     const _renderHelperText = () => {
         const [touched, error] = at(meta, 'touched', 'error');
-        console.log(error);
         if (touched && error) {
             return error;
         }

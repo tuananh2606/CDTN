@@ -73,6 +73,7 @@ const CheckoutPage = () => {
     const createOrderMutation = useMutation({
         mutationFn: (data) => orderApis.createOrder(user?.accessToken, data),
         onSuccess: async (data) => {
+            console.log(data);
             navigate('/order-status', {
                 state: { orderId: data.orderId, paymentMethod: data.paymentInfo.paymentMethod },
             });

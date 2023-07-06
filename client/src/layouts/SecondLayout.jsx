@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
-import HeaderOnly from './HeaderOnly';
+import HeaderOnly from './Header/HeaderOnly';
 import FooterOnly from './FooterOnly';
 
 const SecondLayout = ({ children }) => {

@@ -22,15 +22,23 @@ const LoginPage = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     let location = useLocation();
-    const _handleSubmit = (values, { setSubmitting }) => {
-        setTimeout(() => {
+
+    const _sleep = (ms) => {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    };
+    const _handleSubmit = async (values, { setSubmitting, setErrors }) => {
+        await _sleep(1000);
+        try {
             const user = {
                 email: values.email,
                 password: values.password,
             };
-            loginUser(user, dispatch, navigate, location.state.prevUrl);
-            setSubmitting(false);
-        }, 400);
+            await dispatch(loginUser(user)).unwrap();
+            location.state.prevUrl ? navigate(`${location.state.prevUrl}`) : navigate('/user');
+        } catch (err) {
+            setErrors({ email: err });
+        }
+        setSubmitting(false);
     };
     return (
         <Wrapper>
@@ -43,7 +51,7 @@ const LoginPage = () => {
                         validate={(values) => {
                             const errors = {};
                             if (!values.email) {
-                                errors.email = 'Required';
+                                errors.email = 'Email is required';
                             } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)) {
                                 errors.email = 'Invalid email address';
                             }

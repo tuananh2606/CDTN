@@ -42,8 +42,6 @@ const IdentificationModal = ({ ...props }, ref) => {
         actions.setSubmitting(false);
     };
 
-    console.log(errorMessage);
-
     return (
         <div id="modal-container" ref={ref}>
             <Modal title="IDENTIFICATION" {...props}>
