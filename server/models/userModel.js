@@ -48,7 +48,9 @@ const validate = (user) => {
         email: Joi.string().email().required(),
         password: Joi.string()
             .pattern(
-                new RegExp('(?=[A-Za-z0-9@#$%^&+!=]+$)^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&+!=])(?=.{8,}).*$'),
+                new RegExp(
+                    '(?=[A-Za-z0-9!#$&()*+,-.:;<=>?%@[^_{|}~]+$)^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!#$&()*+,-.:;<=>%?@[^_{|}~])(?=.{8,19}).*$',
+                ),
             )
             .required()
             .min(8)

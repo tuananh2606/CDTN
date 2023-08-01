@@ -24,9 +24,20 @@ const app = express();
 //  CONFIG
 dotenv.config({ path: './config/config.env' });
 const PORT = process.env.PORT || 1000;
+const whitelist = ['http://localhost:5173'];
+const corsOptions = {
+    credentials: true,
+    origin: (origin, callback) => {
+        if (whitelist.indexOf(origin) !== -1 || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+};
 
 connectDatabase();
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(
     bodyParser.urlencoded({
@@ -43,6 +54,7 @@ const category = require('./routes/categoryRoute');
 const authRoute = require('./routes/authRoute');
 const user = require('./routes/userRoute');
 const order = require('./routes/orderRoute');
+const wishlist = require('./routes/wishlistRoute');
 const assets = require('./routes/manageAssets');
 
 app.use(express.static('public'));
@@ -50,6 +62,7 @@ app.use('/v1/product', product);
 app.use('/v1/category', category);
 app.use('/v1/auth', authRoute);
 app.use('/v1/user', user);
+app.use('/v1/wishlist', wishlist);
 app.use('/v1/order', order);
 app.use('/v1/assets', assets);
 

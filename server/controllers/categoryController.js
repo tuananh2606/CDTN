@@ -10,8 +10,6 @@ const uploadFiles = async (req, res) => {
     const imageFiles = req.files.images !== undefined && req.files.images;
     const videosFiles = req.files.videos !== undefined && req.files.videos;
 
-    console.log(req.body);
-
     if (videosFiles) {
         for (const file of videosFiles) {
             const { path, filename } = file;
@@ -107,6 +105,10 @@ exports.updateCategory = async (req, res) => {
 
 exports.deleteCategory = async (req, res) => {
     try {
+        const count = await Category.estimatedDocumentCount();
+        if (count > 0) {
+            return res.status(409).send(`Don't do that`);
+        }
         await cloudinary.deleteFolder(`Videos/${req.body.name}`, { resource_type: 'video' });
         await cloudinary.deleteFolder(`Images/${req.body.name}`);
         await Category.findByIdAndDelete(req.params.id);

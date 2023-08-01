@@ -10,18 +10,19 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 
 import { queryClient } from './react-query';
 import { store, persistor } from './redux/store';
+import './i18n';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-    <React.StrictMode>
-        <QueryClientProvider client={queryClient}>
-            <ReactQueryDevtools initialIsOpen={false} />
-            <Provider store={store}>
-                <PersistGate loading={null} persistor={persistor}>
-                    <GoogleOAuthProvider clientId={`${import.meta.env.VITE_GOOGLE_CLIENT_ID}`}>
-                        <App />
-                    </GoogleOAuthProvider>
-                </PersistGate>
-            </Provider>
-        </QueryClientProvider>
-    </React.StrictMode>,
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <ReactQueryDevtools initialIsOpen={false} />
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <GoogleOAuthProvider clientId={`${import.meta.env.VITE_GOOGLE_CLIENT_ID}`}>
+            <App />
+          </GoogleOAuthProvider>
+        </PersistGate>
+      </Provider>
+    </QueryClientProvider>
+  </React.StrictMode>,
 );

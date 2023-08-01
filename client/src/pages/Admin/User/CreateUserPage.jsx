@@ -1,130 +1,131 @@
 import { useState } from 'react';
-import { Helmet } from 'react-helmet-async';
-import { TextField, Button, InputLabel, MenuItem, FormControl, Select, Stack, Box } from '@mui/material';
+import { Button, InputLabel, MenuItem, FormControl, Select, Stack, Box } from '@mui/material';
 import styled from 'styled-components';
-import { loginSuccess } from '../../../redux/authSlice';
-import { useSelector, useDispatch } from 'react-redux';
 import { useMutation } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { Form, Formik } from 'formik';
+import { InputField } from '../../../components/common';
+
+import AdminPageWrapper from '../../../components/AdminPageWrapper';
+import { loginSuccess } from '../../../redux/authSlice';
 import adminApis from '../../../apis/adminApis';
 import { createAxios } from '../../../utils/http';
-import { useNavigate } from 'react-router-dom';
+import userValidateSchema from './userValidateSchema';
 
 const CreateUserPage = () => {
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [isAdmin, setIsAdmin] = useState(false);
-    const [error, setError] = useState();
+  const [error, setError] = useState();
+  const user = useSelector((state) => state.auth.login.currentUser);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-    const user = useSelector((state) => state.auth.login.currentUser);
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
+  let axiosJWT = createAxios(user, dispatch, loginSuccess);
 
-    let axiosJWT = createAxios(user, dispatch, loginSuccess);
+  const createUserMutation = useMutation({
+    mutationFn: (data) => adminApis.createUser(axiosJWT, user?.accessToken, data),
+    onSuccess: (data) => {
+      if (data && data.name !== 'AxiosError') {
+        navigate('/admin/users');
+      } else {
+        setError(data);
+      }
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
 
-    const createUserMutation = useMutation({
-        mutationFn: (data) => adminApis.createUser(axiosJWT, user?.accessToken, data),
-        onSuccess: (data) => {
-            if (data && data.name !== 'AxiosError') {
-                navigate('/admin/users');
-            } else {
-                setError(data);
-            }
-        },
-        onError: (error) => {
-            console.log(error);
-        },
-    });
+  const _sleep = (ms) => {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  };
 
-    const _handleSubmit = async (e) => {
-        e.preventDefault();
-        let newUser = {
-            firstName,
-            lastName,
-            email,
-            password,
-            isAdmin,
-        };
-        try {
-            await createUserMutation.mutateAsync(newUser);
-        } catch (error) {
-            console.log('An error has occured: ', error);
-        }
+  const _handleSubmit = async (values, actions) => {
+    await _sleep(1000);
+    let newUser = {
+      firstName: values.firstName,
+      lastName: values.lastName,
+      email: values.email,
+      password: values.password,
+      isAdmin: values.isAdmin,
     };
-    return (
-        <>
-            <Helmet>
-                <title> Create New User </title>
-            </Helmet>
-            <h2>Create New User</h2>
-            <Form onSubmit={_handleSubmit}>
-                <StyledBox>
-                    <Stack direction="row" spacing={2}>
-                        <TextField
-                            type="text"
-                            name="firstName"
-                            label="First Name"
-                            onChange={(e) => setFirstName(e.target.value)}
-                        />
-                        <TextField
-                            type="text"
-                            name="lastName"
-                            label="Last Name"
-                            onChange={(e) => setLastName(e.target.value)}
-                        />
-                    </Stack>
-                    <StyledTextInput
-                        type="email"
-                        name="email"
-                        label="Email"
-                        onChange={(e) => setEmail(e.target.value)}
-                        error={error}
-                        helperText={error ? error.response.data : ''}
-                    />
+    try {
+      let res = await createUserMutation.mutateAsync(newUser);
+      if (res.response.status === 409) {
+        actions.setErrors({ email: res.response.data });
+      }
+    } catch (error) {
+      console.log('An error has occured: ', error);
+    }
+    actions.setSubmitting(false);
+  };
 
-                    <StyledTextInput
-                        type="password"
-                        name="password"
-                        label="Password"
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
+  return (
+    <AdminPageWrapper title="Create new user">
+      <Formik
+        initialValues={{ firstName: '', lastName: '', email: '', password: '', isAdmin: false }}
+        validationSchema={userValidateSchema}
+        onSubmit={_handleSubmit}
+      >
+        {({ isSubmitting, status, values, handleChange }) => (
+          <StyledForm>
+            <StyledBox>
+              <Stack spacing={2} sx={{ pt: 3 }} direction={{ xs: 'column', sm: 'row' }}>
+                <InputField id="firstName" type="text" name="firstName" label="First Name" height={56} />
+                <InputField id="lastName" type="text" name="lastName" label="Last Name" height={56} />
+              </Stack>
+              <InputField id="email" type="email" name="email" label="Email" height={56} />
+              <InputField id="password" type="password" name="password" label="Password" height={56} />
 
-                    <FormControl sx={{ mt: 1, maxWidth: 100 }}>
-                        <InputLabel id="admin-select">Is Admin?</InputLabel>
-                        <Select
-                            labelId="admin-select"
-                            id="select-autowidth"
-                            value={isAdmin}
-                            onChange={(e) => setIsAdmin(e.target.value)}
-                            label="Is Admin?"
-                        >
-                            <MenuItem value={true}>True</MenuItem>
-                            <MenuItem value={false}>False</MenuItem>
-                        </Select>
-                    </FormControl>
-                    <Button variant="outlined" color="secondary" type="submit" sx={{ mt: 3 }}>
-                        Submit
-                    </Button>
-                </StyledBox>
-            </Form>
-        </>
-    );
+              <FormControl sx={{ mt: 2, maxWidth: 100 }}>
+                <InputLabel id="admin-select">Is Admin?</InputLabel>
+                <Select
+                  name="isAdmin"
+                  labelId="admin-select"
+                  id="select-autowidth"
+                  value={values.isAdmin}
+                  onChange={handleChange}
+                  label="Is Admin?"
+                >
+                  <MenuItem value={true}>True</MenuItem>
+                  <MenuItem value={false}>False</MenuItem>
+                </Select>
+              </FormControl>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  pt: 2,
+                }}
+              >
+                <Box sx={{ flex: '1 1 auto' }} />
+                <StyledButton variant="outlined" type="submit" disabled={isSubmitting}>
+                  Submit
+                </StyledButton>
+              </Box>
+            </StyledBox>
+          </StyledForm>
+        )}
+      </Formik>
+    </AdminPageWrapper>
+  );
 };
-
 export default CreateUserPage;
 
-const Form = styled.form`
-    display: flex;
-    justify-content: center;
-    align-items: center;
+const StyledForm = styled(Form)`
+  display: flex;
+  justify-content: center;
 `;
 
 const StyledBox = styled(Box)`
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 `;
 
-const StyledTextInput = styled(TextField)`
-    margin: 0.5rem 0;
+const StyledButton = styled(Button)`
+  &&& {
+    width: 20%;
+    background-color: #000;
+    color: #fff;
+    padding: 0.5rem 1rem;
+  }
 `;

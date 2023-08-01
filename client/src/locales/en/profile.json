@@ -1,0 +1,14 @@
+{
+  "overview": "Overview",
+  "my_account": "My Account",
+  "my_orders": "My Orders",
+  "my_wishlist": "My Wishlist",
+  "no_order": "There are no current orders",
+  "empty_wishlist": "Your wishlist is empty",
+  "personal_information": "Personal Information",
+  "login_information": "Login Information",
+  "saveBtn": "Save your information",
+  "changeBtn": "Change",
+  "password_recovery": "Password revocery",
+  "sendBtn": "Send"
+}

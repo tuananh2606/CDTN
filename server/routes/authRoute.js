@@ -7,12 +7,14 @@ const {
     userloginWithGoogle,
     sendEmailResetPassword,
     passwordReset,
+    checkUserExists,
 } = require('../controllers/authController');
 const middlewareAuth = require('../middlewares/auth');
 
+router.post('/check-email', checkUserExists);
 router.post('/register', registerUser);
 router.post('/login', userLogin);
-router.post('/refresh', requestRefreshToken);
+router.get('/refresh', requestRefreshToken);
 router.post('/logout', userLogout);
 router.post('/google', userloginWithGoogle);
 router.post('/password-reset', sendEmailResetPassword);

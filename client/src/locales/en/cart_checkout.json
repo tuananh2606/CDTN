@@ -1,0 +1,12 @@
+{
+  "remove": "Remove",
+  "checkout": "Checkout",
+  "order_summary": "Order Summary",
+  "yours_selections": "Yours Selections",
+  "empty_cart": "Your cart is empty",
+  "subtotal": "Sub Total",
+  "shipping": "Shipping",
+  "estimated_tax": "Estimated Tax",
+  "estimated_total": "Estimated Total",
+  "qty": "QTY"
+}

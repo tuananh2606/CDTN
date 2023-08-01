@@ -2,29 +2,30 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
 import Header from './Header/Header';
-import Footer from './Footer';
+import Footer from './Footer/Footer';
 
 const MainLayout = ({ children }) => {
-    return (
-        <Layout>
-            <Header />
-            <main className="content">{children}</main>
-            <Footer />
-        </Layout>
-    );
+  return (
+    <Layout>
+      <Header />
+      <main className="content">{children}</main>
+      <Footer />
+    </Layout>
+  );
 };
 
 MainLayout.propTypes = {
-    children: PropTypes.node.isRequired,
+  children: PropTypes.node.isRequired,
 };
 
 export default MainLayout;
 
 const Layout = styled.div`
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    .content {
-        flex: 1 0 auto;
-    }
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #fff;
+  .content {
+    flex: 1 1 auto;
+  }
 `;

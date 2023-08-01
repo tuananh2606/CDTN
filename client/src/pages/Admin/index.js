@@ -7,3 +7,4 @@ export { default as CategoriesPage } from './Category/CategoriesPage';
 export { default as CreateCategoryPage } from './Category/CreateCategoryPage';
 export { default as OrdersPage } from './Order/OrdersPage';
 export { default as CreateOrderPage } from './Order/CreateOrderPage';
+export { default as UpdateOrderPage } from './Order/UpdateOrderPage';

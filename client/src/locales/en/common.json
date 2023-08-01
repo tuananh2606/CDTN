@@ -1,0 +1,21 @@
+{
+  "authentication": {
+    "logout": "Log out",
+    "identification": "Identification",
+    "exist_account": "I already have an account",
+    "login": "Login",
+    "password": "Password",
+    "forgot_password": "Forgot your password?",
+    "change_password": "Change your password",
+    "desc_change_password": "In order to reset your password, please provide us your email. We will send you an email momentarily.",
+    "success_send": "You will receive an email shortly to reset your password",
+    "btn_login": "Login",
+    "new_user": "I don't have an account",
+    "description_identification": "Enjoy added benefits and a richer experience by creating a personal account",
+    "register": "Create new account",
+    "cancle": "Cancle",
+    "send": "Send",
+    "err_email_require": "Please fill out this field.",
+    "err_email_format": "Please enter a valid email address"
+  }
+}

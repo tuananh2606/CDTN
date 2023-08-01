@@ -12,6 +12,10 @@ const categorySchema = new mongoose.Schema(
             required: true,
             trim: true,
         },
+        description: {
+            type: String,
+            required: true,
+        },
         videos: {
             desktop_tablet: [
                 {

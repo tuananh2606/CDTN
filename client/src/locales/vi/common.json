@@ -1,0 +1,20 @@
+{
+  "authentication": {
+    "logout": "Đăng xuất",
+    "identification": "Xác thực người dùng",
+    "exist_account": "Tôi đã có tài khoản",
+    "login": "Tên đăng nhập",
+    "password": "Mật khẩu",
+    "forgot_password": "Bạn quên mật khẩu?",
+    "change_password": "Đổi mật khẩu",
+    "desc_change_password": "Để đặt lại mật khẩu, vui lòng nhập email của bạn. Chúng tôi sẽ gửi thư xác nhận qua email.",
+    "btn_login": "Đăng nhập",
+    "new_user": "Tôi không có tài khoản",
+    "description_identification": "Tận hưởng nhiều lợi ích và trải nghiệm phong phú hơn bằng cách tạo tài khoản cá nhân",
+    "register": "Tạo tài khoản mới",
+    "cancle": "Hủy",
+    "send": "Gửi",
+    "err_email_require": "Vui lòng điền vào trường này.",
+    "err_email_format": "Vui lòng nhập địa chỉ email hợp lệ."
+  }
+}

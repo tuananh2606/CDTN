@@ -1,0 +1,12 @@
+{
+  "remove": "Xóa",
+  "checkout": "Thanh toán",
+  "order_summary": "Tóm tắt đơn hàng",
+  "yours_selections": "Các lựa chọn của bạn",
+  "empty_cart": "Giỏ hàng của bạn đang trống",
+  "subtotal": "Tạm tính",
+  "shipping": "Phí ship",
+  "estimated_tax": "Thuế ước tính",
+  "estimated_total": "Tổng tiền",
+  "qty": "SL"
+}

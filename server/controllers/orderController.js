@@ -8,21 +8,34 @@ const hmacSHA512 = require('crypto-js/hmac-sha512');
 
 exports.getAllOrders = async (req, res) => {
     try {
-        const orders = await Order.find();
+        let page = req.query.page || 1;
+        let perPage = parseInt(req.query.limit) || 10;
+        const orders = await Order.find()
+            .skip(perPage * page - perPage) // Trong page đầu tiên sẽ bỏ qua giá trị là 0
+            .limit(perPage);
         return res.status(200).json(orders);
     } catch (error) {
         res.status(500).json(error);
     }
 };
 
-exports.getOrderDetails = async (req, res) => {
+exports.getOrder = async (req, res) => {
     try {
-        const order = await Order.findOne({ orderId: req.params.id });
+        const order = await Order.findById(req.params.id).populate('user').exec();
         return res.status(200).json(order);
     } catch (error) {
         res.status(500).json(error);
     }
 };
+
+// exports.getOrderByUser = async (req, res) => {
+//     try {
+//         const order = await Order.find().populate('user');
+//         return res.status(200).json(order);
+//     } catch (error) {
+//         res.status(500).json(error);
+//     }
+// };
 
 exports.createOrder = async (req, res) => {
     try {
@@ -47,12 +60,9 @@ exports.createOrder = async (req, res) => {
 exports.updateOrder = async (req, res) => {
     try {
         const newOrderData = {
-            name: req.body.name,
-            slug: slugify(req.body.name),
-            videos: req.body.videos,
-            images: req.body.images,
+            orderStatus: req.body.orderStatus,
         };
-        await Category.findByIdAndUpdate(req.params.id, newCategoryData, { new: true, runValidators: true });
+        await Order.findByIdAndUpdate(req.params.id, newOrderData, { new: true, runValidators: true });
         return res.status(200).json({ success: 'Update Successfully!' });
     } catch (error) {
         return res.status(500).json(error);

@@ -1,0 +1,14 @@
+{
+  "overview": "Tổng quan",
+  "my_account": "Tài khoản của tôi",
+  "my_orders": "Đơn hàng của tôi",
+  "my_wishlist": "Danh sách yêu thích của tôi",
+  "no_order": "Không có đơn hàng",
+  "empty_wishlist": "Giỏ hàng đang trống",
+  "personal_information": "Thông tin cá nhân",
+  "login_information": "Thông tin tài khoản",
+  "saveBtn": "Lưu thông tin cá nhân",
+  "changeBtn": "Thay đổi",
+  "password_recovery": "Thay đổi mật khẩu",
+  "sendBtn": "Gửi"
+}

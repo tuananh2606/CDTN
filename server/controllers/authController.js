@@ -19,7 +19,7 @@ const generateAccessToken = (user) => {
         },
         process.env.JWT_ACCESS_KEY,
         {
-            expiresIn: '2h',
+            expiresIn: '30m',
         },
     );
 };
@@ -37,11 +37,24 @@ const generateRefreshToken = (user) => {
     );
 };
 
+exports.checkUserExists = async (req, res) => {
+    console.log(req.body.email);
+    try {
+        const user = await User.findOne({ email: req.body.email });
+        if (user) {
+            return res.status(401).send('Email already exists');
+        } else {
+            return res.status(200).send(`Email doesn't exists`);
+        }
+    } catch {
+        return res.status(500).send(error);
+    }
+};
+
 exports.registerUser = async (req, res) => {
     try {
         const { error } = validate(req.body);
         if (error) return res.status(400).send(error.details[0].message);
-
         const salt = await bcrypt.genSalt(10);
         const hashed = await bcrypt.hash(req.body.password, salt);
         //Create new user
@@ -53,8 +66,8 @@ exports.registerUser = async (req, res) => {
         });
 
         //Save to DB
-        const user = await newUser.save();
-        res.status(200).json(user);
+        const savedUser = await newUser.save();
+        res.status(200).json(savedUser);
     } catch (error) {
         return res.status(500).send(error);
     }
@@ -75,10 +88,11 @@ exports.userLogin = async (req, res) => {
             refreshTokens.push(refreshToken);
             res.cookie('refreshToken', refreshToken, {
                 httpOnly: true,
+                sameSite: 'None',
                 //secure -  Dev: false || Production: true
-                secure: false,
-                path: '/',
-                SameSite: 'None',
+                secure: true,
+                maxAge: 7 * 24 * 60 * 60 * 1000,
+                // path: '/',
             });
             const { password, ...others } = user._doc;
             res.status(200).json({ ...others, accessToken });
@@ -89,9 +103,8 @@ exports.userLogin = async (req, res) => {
 };
 
 exports.requestRefreshToken = async (req, res) => {
-    console.log(req.cookies.refreshToken);
+    console.log(req);
     const refreshToken = req.cookies.refreshToken;
-    console.log(refreshToken);
     if (!refreshToken) return res.status(401).json("You're not authenticated");
     if (!refreshTokens.includes(refreshToken)) {
         return res.status(403).json('Refresh token is not valid');
@@ -167,7 +180,7 @@ exports.sendEmailResetPassword = async (req, res) => {
         if (error) return res.status(400).send(error.details[0].message);
 
         const user = await User.findOne({ email: req.body.email });
-        if (!user) return res.status(400).send("user with given email doesn't exist");
+        if (!user) return res.status(400).send("User with given email doesn't exist");
 
         let token = await Token.findOne({ userId: user._id });
         if (!token) {
@@ -204,7 +217,7 @@ exports.passwordReset = async (req, res) => {
         if (error) return res.status(400).send(error.details[0].message);
 
         const user = await User.findById(req.params.userId);
-        if (!user) return res.status(400).send('invalid link or expired');
+        if (!user) return res.status(400).send('Invalid link or expired');
 
         const token = await Token.findOne({
             userId: user._id,
