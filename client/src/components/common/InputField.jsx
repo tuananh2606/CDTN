@@ -81,7 +81,7 @@ const StyledInputField = styled(TextField)`
   &&& {
     width: 100%;
     input {
-      height: ${(props) => props.height && props.height + 'px !important'};
+      height: ${(props) => (props.height ? props.height + 'px !important' : '56px')};
       padding: 0 1rem;
     }
   }

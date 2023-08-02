@@ -63,10 +63,10 @@ const CreateUserPage = () => {
     <AdminPageWrapper title="Create new user">
       <Formik
         initialValues={{ firstName: '', lastName: '', email: '', password: '', isAdmin: false }}
-        validationSchema={userValidateSchema}
+        validationSchema={userValidateSchema[0]}
         onSubmit={_handleSubmit}
       >
-        {({ isSubmitting, status, values, handleChange }) => (
+        {({ isSubmitting, values, handleChange }) => (
           <StyledForm>
             <StyledBox>
               <Stack spacing={2} sx={{ pt: 3 }} direction={{ xs: 'column', sm: 'row' }}>

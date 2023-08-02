@@ -58,8 +58,8 @@ const UpdateProductPage = () => {
     },
   });
   const { isLoading, isError, data, error, refetch } = useQuery({
-    queryKey: ['product', state],
-    queryFn: () => adminApis.getProductById(axiosJWT, user?.accessToken, state),
+    queryKey: ['product', state.id],
+    queryFn: () => adminApis.getProductById(axiosJWT, user?.accessToken, state.id),
     staleTime: Infinity,
     enable: false,
     onSuccess: (data) => {
@@ -67,7 +67,7 @@ const UpdateProductPage = () => {
     },
   });
 
-  const categoriesQuery = useQuery({
+  useQuery({
     queryKey: ['categories'],
     queryFn: () => adminApis.getAllCategories(axiosJWT, user?.accessToken),
     onSuccess: (data) => {

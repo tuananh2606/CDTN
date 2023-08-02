@@ -22,10 +22,10 @@ import {
   UpdateUserPage,
   CreateCategoryPage,
   UpdateOrderPage,
+  CreateProductPage,
+  UpdateProductPage,
+  UpdateCategoryPage,
 } from '../pages/Admin';
-import UpdateCategoryPage from '../pages/Admin/Category/UpdateCategoryPage';
-import UpdateProductPage from '../pages/Admin/Product/UpdateProductPage';
-// import ProductsPage from '../pages/Admin/ProductsPage';
 
 //Layouts
 import { UserPageLayout, SecondLayout } from '../layouts';
@@ -55,13 +55,14 @@ const privateRoutes = [
   { path: '/admin/users/create', component: CreateUserPage },
   { path: '/admin/users/edit', component: UpdateUserPage },
   { path: '/admin/products', component: ProductsPage },
+  { path: '/admin/products/create', component: CreateProductPage },
+  { path: '/admin/products/edit', component: UpdateProductPage },
   { path: '/admin/categories', component: CategoriesPage },
   { path: '/admin/categories/create', component: CreateCategoryPage },
+  { path: '/admin/categories/edit', component: UpdateCategoryPage },
   { path: '/admin/orders', component: OrdersPage },
   { path: '/admin/orders/edit', component: UpdateOrderPage },
   // { path: '/admin/orders/create', component: CreateOrderPage },
-  { path: '/admin/categories/edit', component: UpdateCategoryPage },
-  { path: '/admin/products/edit', component: UpdateProductPage },
 
   // { path: '/admin/product', component: ProductsPage },
 ];

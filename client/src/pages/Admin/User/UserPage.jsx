@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { loginSuccess } from '../../../redux/authSlice';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -29,8 +29,7 @@ import Iconify from '../../../components/iconify';
 import { TableComponent } from '../../../components/common';
 
 import adminApis from '../../../apis/adminApis';
-import EditForm from '../../../components/forms/admin/EditForm';
-import DialogComponent from '../../../components/common/Dialog';
+
 // ----------------------------------------------------------------------
 
 const headCells = [
@@ -207,7 +206,7 @@ export default function UserPage() {
           Edit
         </MenuItem>
 
-        <MenuItem sx={{ color: 'error.main' }} onClick={() => handleDelete(selected[0])}>
+        <MenuItem sx={{ color: 'error.main' }} onClick={handleDelete}>
           <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
           Delete
         </MenuItem>
