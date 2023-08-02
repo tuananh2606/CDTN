@@ -24,8 +24,8 @@ exports.searchUsers = async (req, res) => {
             { score: { $meta: 'textScore' } },
         )
             .collation({ locale: 'en_US', strength: 1 })
-            .limit(10)
-            .sort({ score: { $meta: 'textScore' } });
+            .sort({ score: { $meta: 'textScore' } })
+            .limit(10);
         res.status(200).json(users);
     } catch (error) {
         return res.status(500).json(error);

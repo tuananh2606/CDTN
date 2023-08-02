@@ -2,12 +2,46 @@ import styled from 'styled-components';
 import { IoCloseOutline } from 'react-icons/io5';
 import { forwardRef } from 'react';
 import ListItems from '../ListItems';
+import { useQuery, useMutation, QueryClient } from '@tanstack/react-query';
+import productApis from '../../apis/productApis';
+import { useState } from 'react';
+import { useDebounce } from 'use-debounce';
+import { memo } from 'react';
 
-const Search = ({ searchToggle, setSearchToggle }, ref) => {
+
+
+const Search = forwardRef(({ searchToggle, setSearchToggle }, ref) => {
+    const [searchValue, setSearchValue] = useState('');
+    const [value] = useDebounce(searchValue, 2000);
+    const handleChange = (e) => {
+        const searchValue = e.target.value;
+        if (!searchValue.startsWith(' ')) {
+            setSearchValue(searchValue);
+            
+        }
+    };
+    console.log(value)
+
+    const { data, isLoading, isError, error } = useQuery({
+        queryKey: ['search-product'],
+        queryFn: () => productApis.searchProduct(value),
+        
+    });
+    // if (isLoading) {
+    //     return <span>Loading...</span>;
+    // }
+
+    // if (isError) {
+    //     return <span>Error: {error.message}</span>;
+    // }
+    console.log(data)
+
     return (
         <StyledSearch searchToggle={searchToggle} ref={ref} id="search-container">
             <div className="search-container">
-                <input className="search-input" type="text" placeholder="Search" />
+                <input className="search-input" type="text" placeholder="Search"
+                value = {searchValue}
+                onChange = {handleChange}  />
                 <IoCloseOutline
                     color="#000"
                     size={26}
@@ -42,9 +76,9 @@ const Search = ({ searchToggle, setSearchToggle }, ref) => {
             </SearchContainerBottom>
         </StyledSearch>
     );
-};
+});
 
-export default forwardRef(Search);
+export default memo(Search);
 
 const StyledSearch = styled.div`
     position: fixed;

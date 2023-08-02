@@ -62,6 +62,18 @@ const productApis = {
             console.log(error);
         }
     },
+    searchProduct: async (searchValue) => {
+        try {
+            const response = await axios.post(`${BASE_URL}/v1/product/search`, {
+                params: {
+                    q: searchValue
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.log(error);
+        }
+    },
 };
 
 export default productApis;

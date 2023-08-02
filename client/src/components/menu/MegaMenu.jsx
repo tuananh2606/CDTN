@@ -16,7 +16,6 @@ const MegaMenu = ({ navToggle, setNavToggle }, ref) => {
 
     const size = useWindowSize();
 
-    const queryClient = new QueryClient();
     const { data, isLoading, error } = useQuery({
         queryKey: ['categories'],
         queryFn: () => categoryApis.getAllCategories(),

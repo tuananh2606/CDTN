@@ -113,3 +113,28 @@ exports.deleteProduct = async (req, res) => {
         return res.status(500).json(error);
     }
 };
+
+exports.searchProducts = async (req, res) => {
+    try {
+        const searchQuery = req.query.q;
+        if (searchQuery!=""){
+            const products = await Product.find(
+                {
+                    $text: {
+                        $search: searchQuery,
+                        $caseSensitive: false,
+                        $diacriticSensitive: false,
+                    },
+                },
+                { score: { $meta: 'textScore' } },
+            )
+                .collation({ locale: 'en_US', strength: 1 })
+                .sort({ score: { $meta: 'textScore' } })
+                .limit(10);
+            res.status(200).json(products);
+        }
+        
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+};
