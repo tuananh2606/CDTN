@@ -19,7 +19,7 @@ const generateAccessToken = (user) => {
         },
         process.env.JWT_ACCESS_KEY,
         {
-            expiresIn: '30m',
+            expiresIn: '1h',
         },
     );
 };
@@ -103,7 +103,6 @@ exports.userLogin = async (req, res) => {
 };
 
 exports.requestRefreshToken = async (req, res) => {
-    console.log(req);
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) return res.status(401).json("You're not authenticated");
     if (!refreshTokens.includes(refreshToken)) {

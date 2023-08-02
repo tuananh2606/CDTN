@@ -1,7 +1,6 @@
-import styled from 'styled-components';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useQuery, QueryClient, useInfiniteQuery } from '@tanstack/react-query';
+import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import { useInView } from 'react-intersection-observer';
 
@@ -11,21 +10,10 @@ import useScrollDirection from '../../../hooks/useScrollDirection';
 import Filter from '../../../components/Filter';
 import productApis from '../../../apis/productApis';
 import categoryApis from '../../../apis/categoryApis';
-import { max } from 'lodash';
-import {
-  ContainerProductList,
-  Card,
-  ProductCardInfo,
-  ProductName,
-  ButtonChangeColor,
-  Variants,
-  StyledImg,
-  Wrapper,
-} from './ProductGridStyles';
+import { ContainerProductList, Card, ProductCardInfo, ProductName, StyledImg, Wrapper } from './ProductGridStyles';
 
 const ProductGrid = () => {
   const scrollDirection = useScrollDirection();
-  const [colorArray, setColorArray] = useState([]);
   const [slugs, setSlugs] = useState([]);
   let { category } = useParams();
   const navigate = useNavigate();
@@ -38,11 +26,10 @@ const ProductGrid = () => {
   // };
 
   const {
-    status,
     data,
     error,
     isLoading,
-    isFetching,
+
     isFetchingNextPage,
     isFetchingPreviousPage,
     fetchNextPage,
@@ -90,16 +77,9 @@ const ProductGrid = () => {
 
   if (isLoading) return 'Loading...';
   if (error) return 'An error has occurred: ' + error.message;
-  const imgs = colorArray;
+
   const link = (slug, code) => {
     return `/${category}/${slug}/${code}`;
-  };
-
-  const handleChangeColor = (clr) => {
-    if (clr) {
-      setColorArray(clr);
-    }
-    setColorArray(clr);
   };
 
   return (
@@ -121,8 +101,8 @@ const ProductGrid = () => {
       <StyledImg
         src={
           size.width > 786
-            ? data.pages[0].products[0].category['images'][1].url
-            : data.pages[0].products[0].category['images'][0].url
+            ? data.pages[0].products[0].category['images'][1]?.url
+            : data.pages[0].products[0].category['images'][0]?.url
         }
         alt="Anh background category"
       />

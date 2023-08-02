@@ -78,6 +78,8 @@ const UpdateOrderPage = () => {
     }
   };
 
+  console.log(state);
+
   return (
     <AdminPageWrapper title="Update order">
       <Grid item xs={12} sm={6} sx={{ mt: 3 }}>

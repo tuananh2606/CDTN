@@ -5,6 +5,8 @@ export default [
     code: Yup.string().min(2, 'Too Short!').max(10, 'Too Long!').required('Code is required'),
     name: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('Name is required'),
     slug: Yup.string().min(2, 'Too Short!').max(20, 'Too Long!').required('Slug is required'),
+    description: Yup.string().required('Description is required'),
+    category: Yup.string().required('Category is required'),
     price: Yup.number().positive('Number is positive').required('Price is required'),
     stock: Yup.number()
       .min(1, 'Too Short!')

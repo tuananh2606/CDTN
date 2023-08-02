@@ -13,5 +13,4 @@ export { default as CreateCategoryPage } from './Category/CreateCategoryPage';
 export { default as UpdateCategoryPage } from './Category/UpdateCategoryPage';
 //Order
 export { default as OrdersPage } from './Order/OrdersPage';
-export { default as CreateOrderPage } from './Order/CreateOrderPage';
 export { default as UpdateOrderPage } from './Order/UpdateOrderPage';

@@ -12,6 +12,8 @@ const ResetPasswordPage = lazy(() => import('../pages/Client/Identification/Rese
 const OverviewPage = lazy(() => import('../pages/User/OverviewPage'));
 const ProfilePage = lazy(() => import('../pages/User/ProfilePage'));
 const WishlistPage = lazy(() => import('../pages/User/WishlistPage'));
+const OrdersPageClient = lazy(() => import('../pages/User/OrderPage'));
+
 import {
   UserPage,
   DashboardAppPage,
@@ -45,6 +47,7 @@ const protectedRoutes = [
   { path: '/user/overview', component: OverviewPage, layout: UserPageLayout },
   { path: '/user/profile', component: ProfilePage, layout: UserPageLayout },
   { path: '/user/wishlist', component: WishlistPage, layout: UserPageLayout },
+  { path: '/user/orders', component: OrdersPageClient, layout: UserPageLayout },
   { path: '/checkout', component: CheckoutPage },
 ];
 

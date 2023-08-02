@@ -1,13 +1,22 @@
 import { useState } from 'react';
-import { TextField, Button, InputLabel, MenuItem, FormControl, Select, InputAdornment } from '@mui/material';
-import { NumericFormat } from 'react-number-format';
+import {
+  TextField,
+  Button,
+  InputLabel,
+  MenuItem,
+  FormControl,
+  Select,
+  InputAdornment,
+  FormHelperText,
+} from '@mui/material';
 import styled from 'styled-components';
 import axios from 'axios';
 import { Form, Formik } from 'formik';
 import { useSelector, useDispatch } from 'react-redux';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import { useNavigate } from 'react-router-dom';
 
 import NumberInput from '../../../components/common/Input/NumberInput';
 import { InputField } from '../../../components/common';
@@ -22,15 +31,15 @@ const CreateProductPage = () => {
   const [categories, setCategories] = useState([]);
 
   const user = useSelector((state) => state.auth.login.currentUser);
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   let axiosJWT = createAxios(user, dispatch, loginSuccess);
 
-  const queryClient = useQueryClient();
   const createProductMutation = useMutation({
     mutationFn: (data) => adminApis.createProduct(axiosJWT, user?.accessToken, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['products'] });
+      navigate('/admin/products');
     },
   });
 
@@ -83,8 +92,7 @@ const CreateProductPage = () => {
           stock: values.stock,
         };
       }
-      alert(JSON.stringify(values, null, 2));
-      // createProductMutation.mutate(newProduct);
+      createProductMutation.mutate(newProduct);
     } catch (error) {
       console.log(error);
     }
@@ -99,30 +107,35 @@ const CreateProductPage = () => {
           slug: '',
           description: '',
           category: '',
-          price: 0,
-          stock: 0,
+          price: '',
+          stock: '',
         }}
-        // validationSchema={productValidateSchema[0]}
+        validationSchema={productValidateSchema[0]}
         onSubmit={_handleSubmit}
       >
-        {({ isSubmitting, values, handleChange, setFieldValue }) => (
+        {({ errors, touched, isSubmitting, values, handleChange, setFieldValue }) => (
           <StyledForm encType="multipart/form-data">
             <InputField type="text" name="code" label="Code" />
             <InputField type="text" name="name" label="Name" />
             <InputField type="text" name="slug" label="Slug" />
-            <label style={{ marginBottom: '0.5rem' }}>Description</label>
-            <QuillContainer id="description" name="description" theme="snow" onChange={handleChange} />
-            {/* <StyledTextInput
-            type="text"
-            name="description"
-            label="Description"
-            onChange={(e) => setDescription(e.target.value)}
-          /> */}
-            {/* <input type="text" onChange={(e) => setName(e.target.value)} value={'Test'} name="name" /> */}
+
+            <FormControl>
+              <label style={{ marginBottom: '0.5rem' }}>Description</label>
+              <QuillContainer name="description" theme="snow" onChange={(e) => setFieldValue('description', e)} />
+              {touched.description && errors.description ? (
+                <FormHelperText error sx={{ marginLeft: '16px !important' }}>
+                  {touched.description && errors.description}
+                </FormHelperText>
+              ) : null}
+            </FormControl>
             <label style={{ marginBottom: '0.5rem' }}>Images</label>
             <input type="file" name="images" multiple accept="image/*" onChange={(e) => setImages(e.target.files)} />
             {/* <StyledTextInput type="text" name="code" label="Variation" onChange={(e) => setName(e.target.value)} /> */}
-            <FormControl fullWidth sx={{ mt: '1rem', mb: '0.5rem' }}>
+            <FormControl
+              error={Boolean(touched.category && errors.category)}
+              fullWidth
+              sx={{ mt: '1rem', mb: '0.5rem' }}
+            >
               <InputLabel id="select-label">Category</InputLabel>
               <Select
                 name="category"
@@ -140,19 +153,26 @@ const CreateProductPage = () => {
                     </MenuItem>
                   ))}
               </Select>
+              {touched.category && errors.category ? (
+                <FormHelperText error sx={{ marginLeft: '16px !important' }}>
+                  {touched.category && errors.category}
+                </FormHelperText>
+              ) : null}
             </FormControl>
             <NumberInput
+              error={Boolean(touched.price && errors.price)}
               customInput={TextField}
               label="Price"
               thousandSeparator
               value={values.price}
               onValueChange={(values) => setFieldValue('price', values.value)}
+              helperText={touched.price && errors.price}
               InputProps={{
                 startAdornment: <InputAdornment position="start">vnđ</InputAdornment>,
               }}
             />
             <InputField type="number" name="stock" label="Stock" />
-            <Button variant="outlined" color="secondary" type="submit" sx={{ mt: 3 }}>
+            <Button variant="outlined" color="secondary" disabled={isSubmitting} type="submit" sx={{ mt: 3 }}>
               Submit
             </Button>
           </StyledForm>

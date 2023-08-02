@@ -19,23 +19,34 @@ exports.getAllOrders = async (req, res) => {
     }
 };
 
-exports.getOrder = async (req, res) => {
+exports.getOrderByOrderId = async (req, res) => {
     try {
-        const order = await Order.findById(req.params.id).populate('user').exec();
+        const order = await Order.findOne({ orderId: req.params.id }).populate('user').exec();
+        console.log(order);
         return res.status(200).json(order);
     } catch (error) {
         res.status(500).json(error);
     }
 };
 
-// exports.getOrderByUser = async (req, res) => {
-//     try {
-//         const order = await Order.find().populate('user');
-//         return res.status(200).json(order);
-//     } catch (error) {
-//         res.status(500).json(error);
-//     }
-// };
+exports.getOrder = async (req, res) => {
+    try {
+        const order = await Order.findById(req.params.id).populate('user').exec();
+        console.log(order);
+        return res.status(200).json(order);
+    } catch (error) {
+        res.status(500).json(error);
+    }
+};
+
+exports.getOrderByUser = async (req, res) => {
+    try {
+        const order = await Order.find({ user: req.params.id }).populate('user');
+        return res.status(200).json(order);
+    } catch (error) {
+        res.status(500).json(error);
+    }
+};
 
 exports.createOrder = async (req, res) => {
     try {

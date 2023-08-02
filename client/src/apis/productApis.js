@@ -65,10 +65,9 @@ const productApis = {
   },
   searchProducts: async (searchValue) => {
     try {
-      const response = await axios.post(`${BASE_URL}/v1/product/search`, {
+      const response = await axios.get(`${BASE_URL}/v1/product/search`, {
         params: {
           q: searchValue,
-          age: 10,
         },
       });
       return response.data;

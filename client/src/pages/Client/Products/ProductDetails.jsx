@@ -98,7 +98,7 @@ const ProductDetails = () => {
       <StyledWrapper>
         {size.width < 1024 ? (
           <StyledCarouselWrapper>
-            <Carousel imgs={data.product?.images} autoplay={false} pagination={false} isCustom />
+            <Carousel imgs={data.product?.images} autoplay={false} pagination={false} isProduct isCustom />
           </StyledCarouselWrapper>
         ) : (
           <StyledLeft>

@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useQuery } from '@tanstack/react-query';
 
@@ -6,7 +7,6 @@ import HeroVideo from '../../components/HeroVideo';
 import useWindowSize from '../../hooks/useWindowSize';
 import categoryApis from '../../apis/categoryApis';
 import productApis from '../../apis/productApis';
-import { useState, useEffect } from 'react';
 
 const HomePage = () => {
   const size = useWindowSize();
@@ -32,6 +32,8 @@ const HomePage = () => {
   if (isLoading) return 'Loading...';
   if (error) return 'An error has occurred: ' + error.message;
 
+  console.log(productsQuery.data);
+
   return (
     <>
       {data.map((category, idx) => {
@@ -47,10 +49,20 @@ const HomePage = () => {
           />
         );
       })}
-
+      {/* {productsQuery?.data &&
+        productsQuery?.data.length > 0 &&
+        productsQuery?.data.map((product, idx) => (
+          <StyledWrapperCaroseul>
+            <Carousel imgs={imgs} pagination={false} isCustom={false} />
+            <ProductCardInfo>
+              <ProductName>{product.name}</ProductName>
+            </ProductCardInfo>
+            <Link to={link(product.category['slug'], product.slug, product.code)} className="product-card__url" />
+          </StyledWrapperCaroseul>
+        ))} */}
       {imgs && imgs.length > 0 && (
         <StyledWrapperCaroseul>
-          <Carousel imgs={imgs} pagination={false} isCustom={false} />
+          <Carousel imgs={imgs} data={productsQuery.data} pagination={false} isCustom={false} />
         </StyledWrapperCaroseul>
       )}
       <HeroVideo
@@ -101,6 +113,23 @@ const StyledImage = styled.div`
 const StyledWrapperCaroseul = styled.div`
   position: relative;
   min-height: 100vh;
+  .product-card__url {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+`;
+
+export const ProductCardInfo = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+export const ProductName = styled.span`
+  font-size: 0.875rem;
 `;
 
 // const StyledVideo = styled.video`

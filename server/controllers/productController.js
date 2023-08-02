@@ -20,7 +20,13 @@ exports.getAllProducts = async (req, res) => {
 
 exports.getLatestProducts = async (req, res) => {
     try {
-        const products = await Product.find().sort({ $natural: 1 }).limit(3);
+        const products = await Product.find()
+            .populate({
+                path: 'category',
+                select: { _id: 1, slug: 1 },
+            })
+            .sort({ $natural: 1 })
+            .limit(3);
         return res.status(200).json(products);
     } catch (error) {
         res.status(500).json(error);
@@ -152,9 +158,12 @@ exports.searchProducts = async (req, res) => {
             { score: { $meta: 'textScore' } },
         )
             // .collation({ locale: 'en_US', strength: 1 })
+            .populate({
+                path: 'category',
+                select: { _id: 1, slug: 1 },
+            })
             .limit(10)
             .sort({ score: { $meta: 'textScore' } });
-        console.log(products);
         res.status(200).json(products);
     } catch (error) {
         return res.status(500).json(error);

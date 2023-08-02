@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Button, Stack, Box } from '@mui/material';
+import { Button } from '@mui/material';
 
 export const StyledCard = styled.div`
   position: relative;
