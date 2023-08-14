@@ -78,7 +78,8 @@ export const CartItem = styled.div`
   img {
     height: 100%;
     width: 200px;
-    object-fit: cover;
+    object-fit: contain;
+    cursor: pointer;
     @media only screen and (min-width: 768px) {
       width: 87px;
     }

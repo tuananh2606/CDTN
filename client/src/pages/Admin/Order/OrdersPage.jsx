@@ -1,8 +1,8 @@
 import { Helmet } from 'react-helmet-async';
-import { filter } from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { sentenceCase } from 'change-case';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { loginSuccess } from '../../../redux/authSlice';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -36,6 +36,7 @@ const OrdersPage = () => {
   const [open, setOpen] = useState(null);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
+  const { t } = useTranslation('admin');
   const dispatch = useDispatch();
   let axiosJWT = createAxios(user, dispatch, loginSuccess);
   const navigate = useNavigate();
@@ -97,27 +98,20 @@ const OrdersPage = () => {
   return (
     <>
       <Helmet>
-        <title> Order </title>
+        <title> {t('order')} </title>
       </Helmet>
 
       <Container>
         <>
           <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
             <Typography variant="h4" gutterBottom>
-              Order
+              {t('order')}
             </Typography>
-            <Button
-              variant="contained"
-              startIcon={<Iconify icon="eva:plus-fill" />}
-              // onClick={() => setCreatePageShow(true)}
-            >
-              New Order
-            </Button>
           </Stack>
 
           <TableComponent
             headCells={headCells}
-            data={data}
+            data={data.orders}
             isLoading={isLoading}
             setFilteredData={setFilteredOrders}
             selected={selected}
@@ -167,12 +161,12 @@ const OrdersPage = () => {
       >
         <MenuItem onClick={handleEdit}>
           <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-          Edit
+          {t('edit')}
         </MenuItem>
 
         <MenuItem sx={{ color: 'error.main' }} onClick={handleDelete}>
           <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-          Delete
+          {t('delete')}
         </MenuItem>
       </Popover>
     </>

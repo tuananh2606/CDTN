@@ -3,12 +3,14 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
 import { Stack, Box } from '@mui/material';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import { StyledCard, StyledImg, ProductCardInfo, ProductName, ButtonRemove, StyledButton } from './CardStyles';
 import { wishlistApis } from '../../../apis';
 
 const Card = ({ wishlist }) => {
   const [flipped, setFlip] = useState(false);
+  const { t } = useTranslation('product');
   const queryClient = useQueryClient();
   const user = useSelector((state) => state.auth.login.currentUser);
 
@@ -51,13 +53,13 @@ const Card = ({ wishlist }) => {
           <Box sx={{ flex: '1 1 auto' }} />
           <div className="card-actions">
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-              <StyledButton>Add to shopping cart</StyledButton>
+              <StyledButton>{t('btnAddToSC')}</StyledButton>
 
               <StyledButton
                 component={Link}
                 to={link(wishlist.product.category['slug'], wishlist.product.slug, wishlist.product.code)}
               >
-                Full Details
+                {t('product_details')}
               </StyledButton>
             </Stack>
           </div>

@@ -19,7 +19,7 @@ import {
   Select,
 } from '@mui/material';
 import styled from 'styled-components';
-import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 import { loginSuccess } from '../../../redux/authSlice';
 import { useSelector, useDispatch } from 'react-redux';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -28,11 +28,13 @@ import { createAxios } from '../../../utils/http';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AdminPageWrapper from '../../../components/AdminPageWrapper';
 import { fDateTime } from '../../../utils/formatTime';
+import { VNDFormat } from '../../../utils/formatMoney';
 
 const UpdateOrderPage = () => {
   const [info, setInfo] = useState();
   const [orderStatus, setOrderStatus] = useState();
 
+  const { t } = useTranslation('admin');
   const navigate = useNavigate();
   const { state } = useLocation();
   const user = useSelector((state) => state.auth.login.currentUser);
@@ -81,10 +83,10 @@ const UpdateOrderPage = () => {
   console.log(state);
 
   return (
-    <AdminPageWrapper title="Update order">
+    <AdminPageWrapper title="update_order">
       <Grid item xs={12} sm={6} sx={{ mt: 3 }}>
         <Typography variant="h4" gutterBottom>
-          Billing & Shipping Infomation
+          {t('bill_ship')}
         </Typography>
         <Typography>{info?.shippingInfo.name}</Typography>
         <Typography>{info?.shippingInfo['address'].addressLine1}</Typography>
@@ -96,7 +98,7 @@ const UpdateOrderPage = () => {
       </Grid>
       <Box>
         <Typography variant="h4" gutterBottom>
-          Purchase Reciept
+          {t('reciept')}
         </Typography>
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -131,19 +133,32 @@ const UpdateOrderPage = () => {
         <StyledBox>
           <div>
             <Typography variant="h6" gutterBottom>
-              Order Details
+              {t('order_details')}
             </Typography>
-
-            <Typography>Date: {fDateTime(info?.createdAt)}</Typography>
-            <Typography>Order No: {info?.orderId}</Typography>
-            <Typography>Payment Method: {info?.paymentInfo.paymentMethod}</Typography>
-            <Typography>Payment Status: {info?.paymentInfo.status}</Typography>
-            <Typography>Payment At: {fDateTime(info?.paidAt)}</Typography>
+            <Typography>
+              {t('create_date')}: {fDateTime(info?.createdAt)}
+            </Typography>
+            <Typography>
+              {t('order_no')}: {info?.orderId}
+            </Typography>
+            <Typography>
+              {t('payment_method')}:
+              {info?.paymentInfo.paymentMethod === 'ttqvnp' ? t('payment_vnpay') : t('payment_cod')}
+            </Typography>
+            <Typography>
+              Payment Status:
+              {info?.paymentInfo.status && info?.paymentInfo.paymentMethod === 'ttqvnp' ? t('paid') : t('unpaid')}
+            </Typography>
+            <Typography>
+              {t('payment_at')}: {fDateTime(info?.paidAt)}
+            </Typography>
           </div>
-          <Typography>Total {info?.totalPrice}</Typography>
+          <Typography>
+            {t('total')}: {VNDFormat(info?.totalPrice)}
+          </Typography>
         </StyledBox>
         <Typography variant="h6" gutterBottom>
-          Tracking Order
+          {t('track_order')}
         </Typography>
         <Form onSubmit={_handleSubmit}>
           <FormControl fullWidth sx={{ mt: '1rem', mb: '0.5rem' }}>
@@ -161,7 +176,7 @@ const UpdateOrderPage = () => {
             </Select>
           </FormControl>
           <Button variant="outlined" color="secondary" type="submit" sx={{ mt: 3 }}>
-            Submit
+            {t('submit')}
           </Button>
         </Form>
       </Box>

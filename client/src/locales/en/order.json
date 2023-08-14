@@ -1,0 +1,15 @@
+{
+  "placed_on": "Placed on",
+  "order_status": "Order status",
+  "qty": "Qty",
+  "payment": "Payment",
+  "delivery": "Delivery",
+  "adressline1": "Adressline 1",
+  "adressline2": "Adressline 2",
+  "order_summary": "Order Summary",
+  "subtotal": "Subtotal",
+  "delivery_cost": "Delivery cost",
+  "tax": "Tax",
+  "total": "Total",
+  "cancel": "Cancel"
+}

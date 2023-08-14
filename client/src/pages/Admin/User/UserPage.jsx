@@ -1,5 +1,6 @@
 import { Helmet } from 'react-helmet-async';
-import { filter } from 'lodash';
+import { useTranslation } from 'react-i18next';
+
 import { sentenceCase } from 'change-case';
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
@@ -27,8 +28,8 @@ import Iconify from '../../../components/iconify';
 // import Scrollbar from '../components/scrollbar';
 // sections
 import { TableComponent } from '../../../components/common';
-
-import adminApis from '../../../apis/adminApis';
+import { useDebounce } from '../../../hooks';
+import { adminApis } from '../../../apis';
 
 // ----------------------------------------------------------------------
 
@@ -48,8 +49,10 @@ export default function UserPage() {
   const [open, setOpen] = useState(null);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [_idUser, setIdUser] = useState();
+  const [searchValue, setSearchValue] = useState('');
+  const debounced = useDebounce(searchValue, 500);
   const [filteredUsers, setFilteredUsers] = useState();
-
+  const { t } = useTranslation('admin');
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -68,6 +71,11 @@ export default function UserPage() {
     queryKey: ['users'],
     queryFn: () => adminApis.getAllUsers(axiosJWT, user?.accessToken),
   });
+
+  // const searchQ = useQuery({
+  //   queryKey: ['search'],
+  //   queryFn: () => adminApis.searchUserRegex(debounced != '' ? debounced : ''),
+  // });
 
   if (isLoading) {
     return <span>Loading...</span>;
@@ -112,26 +120,26 @@ export default function UserPage() {
   return (
     <>
       <Helmet>
-        <title> User </title>
+        <title> {t('user')} </title>
       </Helmet>
 
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            User
+            {t('user')}
           </Typography>
           <Button
             variant="contained"
             startIcon={<Iconify icon="eva:plus-fill" />}
             onClick={() => navigate('/admin/users/create')}
           >
-            New User
+            {t('new_user_btn')}
           </Button>
         </Stack>
 
         <TableComponent
           headCells={headCells}
-          data={data}
+          data={data.users}
           isLoading={isLoading}
           setFilteredData={setFilteredUsers}
           selected={selected}
@@ -140,6 +148,7 @@ export default function UserPage() {
           setPage={setPage}
           rowsPerPage={rowsPerPage}
           setRowsPerPage={setRowsPerPage}
+          setSearch={setSearchValue}
         >
           {filteredUsers &&
             filteredUsers.length > 0 &&
@@ -203,12 +212,12 @@ export default function UserPage() {
       >
         <MenuItem onClick={handleEdit}>
           <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-          Edit
+          {t('edit')}
         </MenuItem>
 
         <MenuItem sx={{ color: 'error.main' }} onClick={handleDelete}>
           <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-          Delete
+          {t('delete')}
         </MenuItem>
       </Popover>
     </>

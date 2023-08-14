@@ -29,7 +29,6 @@ import orderApis from '../../../apis/orderApis';
 import { checkoutValidationSchema } from '../../../components/forms/checkout/FormModels';
 import { ShippingAddressForm, PaymentForm } from '../../../components/forms/checkout';
 import ReviewOrder from '../ReviewOrder';
-import { emptyCart } from '../../../redux/cartSlice';
 
 const steps = ['Shipping Address', 'Payment', 'Review Your Order'];
 
@@ -64,7 +63,6 @@ const CheckoutPage = () => {
   const currentValidationSchema = checkoutValidationSchema[activeStep];
   const { t } = useTranslation('cart_checkout');
 
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const user = useSelector((state) => state.auth.login.currentUser);
@@ -131,13 +129,13 @@ const CheckoutPage = () => {
         totalPrice: calculatePriceTotal(),
         orderId: dayjs(Date.now()).format('DDHHmmss'),
       };
-      paymentMutation.mutate(data);
+      paymentMutation.mutateAsync(data);
       createOrderMutation.mutate(newOrder);
     }
     if (values.payment === 'ttknh') {
       createOrderMutation.mutate(newOrder);
     }
-    dispatch(emptyCart());
+
     actions.setSubmitting(false);
   }
 
@@ -270,12 +268,6 @@ const CheckoutPage = () => {
                         <CartItemInfo>
                           <h3>{item.name}</h3>
                           <span>{item.code}</span>
-                          {/* <div>
-                                                            <span>Variation: </span>
-                                                            {item.variation.map((i, idxC) => (
-                                                                <span key={idxC}>{i}</span>
-                                                            ))}
-                                                        </div> */}
                         </CartItemInfo>
                         <CartItemQP>
                           <span>

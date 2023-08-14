@@ -10,6 +10,7 @@ import {
   FormControl,
   Select,
   InputAdornment,
+  CircularProgress,
 } from '@mui/material';
 import { NumericFormat } from 'react-number-format';
 import { useSelector, useDispatch } from 'react-redux';
@@ -19,6 +20,7 @@ import { useLocation } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import { useTranslation } from 'react-i18next';
 
 import { loginSuccess } from '../../../redux/authSlice';
 import adminApis from '../../../apis/adminApis';
@@ -38,10 +40,12 @@ const UpdateProductPage = () => {
     stock: 0,
     images: [],
   });
+  const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
   const [media, setMedia] = useState([]);
   const [images, setImages] = useState([]);
 
+  const { t } = useTranslation('admin');
   const navigate = useNavigate();
   const { state } = useLocation();
   const user = useSelector((state) => state.auth.login.currentUser);
@@ -49,19 +53,17 @@ const UpdateProductPage = () => {
 
   let axiosJWT = createAxios(user, dispatch, loginSuccess);
 
-  const queryClient = useQueryClient();
-
   const UpdateProductMutation = useMutation({
-    mutationFn: (product) => adminApis.updateProduct(axiosJWT, user?.accessToken, state, product),
+    mutationFn: (product) => adminApis.updateProduct(axiosJWT, user?.accessToken, state.id, product),
     onSuccess: () => {
+      setLoading(false);
       navigate('/admin/products');
     },
   });
   const { isLoading, isError, data, error, refetch } = useQuery({
     queryKey: ['product', state.id],
     queryFn: () => adminApis.getProductById(axiosJWT, user?.accessToken, state.id),
-    staleTime: Infinity,
-    enable: false,
+
     onSuccess: (data) => {
       setInfo(data);
     },
@@ -72,7 +74,7 @@ const UpdateProductPage = () => {
     queryFn: () => adminApis.getAllCategories(axiosJWT, user?.accessToken),
     onSuccess: (data) => {
       setCategories(
-        data?.map((item, idx) => {
+        data?.categories.map((item, idx) => {
           return { name: item.name, id: item._id };
         }),
       );
@@ -114,6 +116,7 @@ const UpdateProductPage = () => {
     try {
       let newProduct = {};
       if (check) {
+        setLoading(true);
         const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/v1/product/upload`, formData);
         newProduct = {
           ...info,
@@ -131,7 +134,7 @@ const UpdateProductPage = () => {
   };
 
   return (
-    <AdminPageWrapper title="Edit product">
+    <AdminPageWrapper title="edit_product">
       <Form onSubmit={_handleSubmit} encType="multipart/form-data">
         <StyledTextInput
           type="text"
@@ -193,13 +196,7 @@ const UpdateProductPage = () => {
               ))}
           </Select>
         </FormControl>
-        {/* <StyledTextInput
-                    type="text"
-                    label="Category"
-                    name="category"
-                    value={info?.category || ''}
-                    onChange={(e) => setInfo({ ...info, category: e.target.value })}
-                /> */}
+
         <StyledTextInput
           type="number"
           label="Stock"
@@ -227,12 +224,17 @@ const UpdateProductPage = () => {
           </ImageList>
         </Box>
 
-        <label>Images</label>
+        <label className="media">Images</label>
         <input type="file" multiple accept="image/*" onChange={(e) => setImages(e.target.files)} />
 
-        <Button variant="outlined" color="secondary" type="submit" sx={{ mt: 3 }}>
-          Submit
-        </Button>
+        <Box sx={{ display: 'flex', alignItems: 'center', mt: 3, justifyContent: 'flex-end' }}>
+          <span>
+            {loading && <CircularProgress sx={{ width: '20px !important', height: '20px !important', mr: 2 }} />}
+          </span>
+          <Button variant="outlined" color="secondary" type="submit">
+            {t('submit')}
+          </Button>
+        </Box>
       </Form>
     </AdminPageWrapper>
   );
@@ -243,6 +245,33 @@ export default UpdateProductPage;
 const Form = styled.form`
   display: flex;
   flex-direction: column;
+  .media {
+    margin-top: 0.5rem;
+  }
+  input[type='file'] {
+    width: 500px;
+    height: 56px;
+    max-width: 100%;
+    color: #444;
+    padding: 10px;
+    background: #fff;
+    border-radius: 6px;
+    border: 1px solid rgba(145, 158, 171, 0.32);
+  }
+  input[type='file']::file-selector-button {
+    margin-right: 20px;
+    border: none;
+    background: #084cdf;
+    padding: 10px 20px;
+    border-radius: 10px;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s ease-in-out;
+  }
+
+  input[type='file']::file-selector-button:hover {
+    background: #0d45a5;
+  }
 `;
 const StyledTextInput = styled(TextField)`
   margin: 0.5rem 0;

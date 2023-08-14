@@ -6,6 +6,7 @@ import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 import { loginSuccess } from '../../../redux/authSlice';
 import adminApis from '../../../apis/adminApis';
@@ -21,7 +22,7 @@ const UpdateCategoryPage = () => {
   });
   const [images, setImages] = useState([]);
   const [videos, setVideos] = useState([]);
-
+  const { t } = useTranslation('admin');
   const navigate = useNavigate();
   const { state } = useLocation();
   const user = useSelector((state) => state.auth.login.currentUser);
@@ -151,7 +152,7 @@ const UpdateCategoryPage = () => {
     }
   };
   return (
-    <AdminPageWrapper title="Edit category" width="800px">
+    <AdminPageWrapper title="edit_category" width="800px">
       <Form onSubmit={_handleSubmit} encType="multipart/form-data">
         <TextField type="text" label="Name" value={name} onChange={(e) => setName(e.target.value)} />
         {/* <input type="text" onChange={(e) => setName(e.target.value)} value={'Test'} name="name" /> */}
@@ -172,7 +173,7 @@ const UpdateCategoryPage = () => {
           </ImageList>
         </Box>
 
-        <label>Images</label>
+        <label className="media">Images</label>
         <input type="file" multiple accept="image/*" onChange={(e) => setImages(e.target.files)} />
 
         <Stack direction="row" spacing={2} sx={{ border: 1, padding: 2, borderColor: '#ccc', my: 1 }}>
@@ -191,7 +192,7 @@ const UpdateCategoryPage = () => {
           ))}
         </Stack>
 
-        <label>Videos</label>
+        <label className="media">Videos</label>
         <input
           type="file"
           multiple
@@ -200,7 +201,7 @@ const UpdateCategoryPage = () => {
         />
 
         <Button variant="outlined" color="secondary" type="submit" sx={{ mt: 3 }}>
-          Submit
+          {t('submit')}
         </Button>
       </Form>
     </AdminPageWrapper>
@@ -212,4 +213,31 @@ export default UpdateCategoryPage;
 const Form = styled.form`
   display: flex;
   flex-direction: column;
+  .media {
+    margin-top: 0.5rem;
+  }
+  input[type='file'] {
+    width: 500px;
+    height: 56px;
+    max-width: 100%;
+    color: #444;
+    padding: 10px;
+    background: #fff;
+    border-radius: 6px;
+    border: 1px solid rgba(145, 158, 171, 0.32);
+  }
+  input[type='file']::file-selector-button {
+    margin-right: 20px;
+    border: none;
+    background: #084cdf;
+    padding: 10px 20px;
+    border-radius: 10px;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s ease-in-out;
+  }
+
+  input[type='file']::file-selector-button:hover {
+    background: #0d45a5;
+  }
 `;

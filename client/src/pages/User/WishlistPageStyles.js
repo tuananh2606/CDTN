@@ -24,3 +24,7 @@ export const ContainerProductList = styled.div`
     padding-right: 8.3333333333vw;
   }
 `;
+
+export const Empty = styled.div`
+  margin-top: 88px;
+`;

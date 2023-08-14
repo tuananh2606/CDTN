@@ -32,18 +32,16 @@ const HomePage = () => {
   if (isLoading) return 'Loading...';
   if (error) return 'An error has occurred: ' + error.message;
 
-  console.log(productsQuery.data);
-
   return (
     <>
-      {data.map((category, idx) => {
+      {data?.categories.map((category, idx) => {
         const { videos, description, slug } = category;
 
         return (
           <HeroVideo
             key={idx}
             id={`player${idx + 1}`}
-            url={`${size.width > 786 ? videos['desktop_tablet'][0].url : videos['mobile']?.[0].url}`}
+            url={`${size.width > 786 ? videos['desktop_tablet'][0]?.url : videos['mobile']?.[0]?.url}`}
             description={description}
             slug={slug}
           />

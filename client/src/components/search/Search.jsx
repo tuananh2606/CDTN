@@ -2,15 +2,16 @@ import { IoCloseOutline } from 'react-icons/io5';
 import { forwardRef } from 'react';
 import ListItems from '../ListItems';
 import { memo, useState, useEffect } from 'react';
-import { useDebounce } from 'use-debounce';
 import { StyledSearch, SearchContainerBottom } from './SearchStyles';
 import productApis from '../../apis/productApis';
 import { Link } from 'react-router-dom';
 
+import { useDebounce } from '../../hooks';
+
 const Search = forwardRef(({ searchToggle, setSearchToggle }, ref) => {
   const [text, setText] = useState(' ');
   const [searchData, setSearchData] = useState();
-  const [value] = useDebounce(text, 2000);
+  const debounced = useDebounce(text, 500);
 
   const handleChange = (e) => {
     const searchValue = e.target.value;
@@ -30,13 +31,13 @@ const Search = forwardRef(({ searchToggle, setSearchToggle }, ref) => {
 
   useEffect(() => {
     const search = async () => {
-      if (value !== ' ') {
-        const response = await productApis.searchProducts(value);
+      if (debounced !== ' ') {
+        const response = await productApis.searchProducts(debounced);
         setSearchData(response);
       }
     };
     search();
-  }, [value]);
+  }, [debounced]);
 
   return (
     <StyledSearch searchToggle={searchToggle} ref={ref} id="search-container">

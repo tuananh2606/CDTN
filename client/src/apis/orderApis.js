@@ -67,6 +67,20 @@ const orderApis = {
       console.log(error);
     }
   },
+  updateStatusOrder: async (accessToken, data) => {
+    try {
+      const response = await axios.put(
+        `${BASE_URL}/v1/order/${data.id}`,
+        { orderStatus: data.status },
+        {
+          headers: { token: `Bearer ${accessToken}` },
+        },
+      );
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  },
 };
 
 export default orderApis;

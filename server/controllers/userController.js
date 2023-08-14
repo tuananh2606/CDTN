@@ -5,8 +5,11 @@ const bcrypt = require('bcrypt');
 
 exports.getAllUsers = async (req, res) => {
     try {
-        const users = await User.find();
-        res.status(200).json(users);
+        const users = await User.find().sort({ createdAt: -1 });
+        const totalDocuments = await User.find().countDocuments();
+
+        const newUsers = { users: users, count: totalDocuments };
+        return res.status(200).json(newUsers);
     } catch (error) {
         return res.status(500).json(error);
     }
@@ -32,7 +35,22 @@ exports.searchUsers = async (req, res) => {
         return res.status(500).json(error);
     }
 };
+exports.searchUserRegex = async (req, res) => {
+    try {
+        const searchQuery = req.query.q;
+        const users = await User.find({
+            $or: [
+                { firstName: { $regex: searchQuery, $options: 'i' } },
+                { lastName: { $regex: searchQuery, $options: 'i' } },
+                { email: { $regex: searchQuery, $options: 'i' } },
+            ],
+        }).limit(10);
 
+        res.status(200).json(users);
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+};
 // exports.getAllUsers = async (req, res) => {
 //     try {
 //         const pageNumber = parseInt(req.query.page);

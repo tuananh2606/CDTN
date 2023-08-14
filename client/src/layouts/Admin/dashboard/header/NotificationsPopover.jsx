@@ -111,8 +111,8 @@ export default function NotificationsPopover() {
             </ListSubheader>
           }
         >
-          {notifications.slice(0, 2).map((notification) => (
-            <NotificationItem key={notification.id} notification={notification} />
+          {notifications.slice(0, 2).map((notification, idx) => (
+            <NotificationItem key={idx} notification={notification} />
           ))}
         </List>
 
@@ -124,8 +124,8 @@ export default function NotificationsPopover() {
             </ListSubheader>
           }
         >
-          {notifications.slice(2, 5).map((notification) => (
-            <NotificationItem key={notification.id} notification={notification} />
+          {notifications.slice(2, 5).map((notification, idx) => (
+            <NotificationItem key={idx} notification={notification} />
           ))}
         </List>
         {/* </Scrollbar> */}

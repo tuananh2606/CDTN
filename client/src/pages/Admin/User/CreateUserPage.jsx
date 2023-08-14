@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { Form, Formik } from 'formik';
 import { InputField } from '../../../components/common';
+import { useTranslation } from 'react-i18next';
 
 import AdminPageWrapper from '../../../components/AdminPageWrapper';
 import { loginSuccess } from '../../../redux/authSlice';
@@ -18,7 +19,7 @@ const CreateUserPage = () => {
   const user = useSelector((state) => state.auth.login.currentUser);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const { t } = useTranslation('admin');
   let axiosJWT = createAxios(user, dispatch, loginSuccess);
 
   const createUserMutation = useMutation({
@@ -60,7 +61,7 @@ const CreateUserPage = () => {
   };
 
   return (
-    <AdminPageWrapper title="Create new user">
+    <AdminPageWrapper title="create_new_user">
       <Formik
         initialValues={{ firstName: '', lastName: '', email: '', password: '', isAdmin: false }}
         validationSchema={userValidateSchema[0]}
@@ -99,7 +100,7 @@ const CreateUserPage = () => {
               >
                 <Box sx={{ flex: '1 1 auto' }} />
                 <StyledButton variant="outlined" type="submit" disabled={isSubmitting}>
-                  Submit
+                  {t('submit')}
                 </StyledButton>
               </Box>
             </StyledBox>
@@ -123,7 +124,7 @@ const StyledBox = styled(Box)`
 
 const StyledButton = styled(Button)`
   &&& {
-    width: 20%;
+    width: 30%;
     background-color: #000;
     color: #fff;
     padding: 0.5rem 1rem;

@@ -21,8 +21,8 @@ router.get('/:id', getOrder);
 router.get('/orderId/:id', getOrderByOrderId);
 router.get('/user/:id', getOrderByUser);
 
-router.post('/', middlewareAuth.isAuthenticatedUser, middlewareAuth.authorizeRoles, createOrder);
-router.put('/:id', middlewareAuth.isAuthenticatedUser, middlewareAuth.authorizeRoles, updateOrder);
+router.post('/', middlewareAuth.isAuthenticatedUser, createOrder);
+router.put('/:id', middlewareAuth.isAuthenticatedUser, updateOrder);
 router.delete('/:id', middlewareAuth.isAuthenticatedUser, middlewareAuth.authorizeRoles, deleteOrder);
 router.put('/vnpay/:orderId', updateOrderStatusVnPay);
 router.post('/payment-vnpay', createPaymentVnPay);

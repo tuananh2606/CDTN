@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
 
-import { ContainerProductList } from './WishlistPageStyles';
+import { ContainerProductList, Empty } from './WishlistPageStyles';
 import { Card } from '../../components/common';
 import { wishlistApis } from '../../apis';
 
@@ -15,12 +15,14 @@ const WishlistPage = () => {
   if (isLoading) return 'Loading...';
   if (error) return 'An error has occurred: ' + error.message;
 
-  console.log(data);
-
   return (
     <section style={{ minHeight: '100vh', height: 'auto', backgroundColor: '#f6f5f3' }}>
       <ContainerProductList>
-        {data && data.length > 0 && data.map((item, idx) => <Card wishlist={item} key={idx} />)}
+        {data && data.length > 0 ? (
+          data.map((item, idx) => <Card wishlist={item} key={idx} />)
+        ) : (
+          <Empty>Your wishlist is empty</Empty>
+        )}
       </ContainerProductList>
     </section>
   );

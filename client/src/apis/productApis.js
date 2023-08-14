@@ -75,6 +75,20 @@ const productApis = {
       console.log(error);
     }
   },
+
+  filterProducts: async (path, data) => {
+    try {
+      const body = {
+        category: path,
+        gte: data[0],
+        lte: data[1],
+      };
+      const response = await axios.post(`${BASE_URL}/v1/product/filter`, body);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  },
 };
 
 export default productApis;

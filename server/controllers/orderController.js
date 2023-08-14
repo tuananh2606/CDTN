@@ -11,9 +11,13 @@ exports.getAllOrders = async (req, res) => {
         let page = req.query.page || 1;
         let perPage = parseInt(req.query.limit) || 10;
         const orders = await Order.find()
-            .skip(perPage * page - perPage) // Trong page đầu tiên sẽ bỏ qua giá trị là 0
-            .limit(perPage);
-        return res.status(200).json(orders);
+            .populate({ path: 'user', select: { _id: 1, firstName: 1, lastName: 1 } })
+            .sort({ createdAt: -1 });
+        // .skip(perPage * page - perPage) // Trong page đầu tiên sẽ bỏ qua giá trị là 0
+        // .limit(perPage);
+        const totalDocuments = await Order.find().countDocuments();
+        const newOrder = { orders: orders, count: totalDocuments };
+        return res.status(200).json(newOrder);
     } catch (error) {
         res.status(500).json(error);
     }
@@ -52,6 +56,14 @@ exports.createOrder = async (req, res) => {
     try {
         const { orderId, shippingInfo, orderItems, paymentMethod, totalPrice, user } = req.body;
 
+        for (let i = 0; i < orderItems.length; i++) {
+            const oldStock = await Product.findById(orderItems[i].id);
+            await Product.findByIdAndUpdate(
+                orderItems[i].id,
+                { stock: oldStock.stock - orderItems[i].quantity },
+                { new: true, runValidators: true },
+            );
+        }
         const newOrder = {
             orderId,
             shippingInfo,

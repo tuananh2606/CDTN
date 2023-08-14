@@ -13,6 +13,18 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
+export const logoutUser = async (dispatch, accessToken, navigate, axiosJWT) => {
+  try {
+    await axiosJWT.post(`${BASE_URL}/v1/auth/logout`, {
+      headers: { token: `Bearer ${accessToken}` },
+    });
+    dispatch(logoutSuccess());
+    navigate('/');
+  } catch (err) {
+    dispatch(logoutFailed());
+  }
+};
+
 export const loginUser = createAsyncThunk('auth/login', async (user, { rejectWithValue }) => {
   try {
     const response = await axios.post(`${BASE_URL}/v1/auth/login`, user, {
@@ -21,6 +33,7 @@ export const loginUser = createAsyncThunk('auth/login', async (user, { rejectWit
       },
       withCredentials: true,
     });
+
     return response.data;
   } catch (error) {
     if (error.response && error.response.data.message) {
@@ -51,16 +64,5 @@ export const registerUser = async (user, dispatch, navigate) => {
     navigate('/');
   } catch (err) {
     dispatch(registerFailed());
-  }
-};
-export const logoutUser = async (dispatch, accessToken, navigate, axiosJWT) => {
-  try {
-    await axiosJWT.post(`${BASE_URL}/v1/auth/logout`, {
-      headers: { token: `Bearer ${accessToken}` },
-    });
-    dispatch(logoutSuccess());
-    navigate('/');
-  } catch (err) {
-    dispatch(logoutFailed());
   }
 };

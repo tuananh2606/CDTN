@@ -4,6 +4,7 @@ import { Form, Formik } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 import { InputField } from '../../../components/common';
 import { loginSuccess } from '../../../redux/authSlice';
@@ -19,7 +20,7 @@ const UpdateUserPage = () => {
   const user = useSelector((state) => state.auth.login.currentUser);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const { t } = useTranslation('admin');
   let axiosJWT = createAxios(user, dispatch, loginSuccess);
 
   const { isLoading, isError, data, error } = useQuery({
@@ -65,7 +66,7 @@ const UpdateUserPage = () => {
   };
 
   return (
-    <AdminPageWrapper title="Edit user">
+    <AdminPageWrapper title="edit_user">
       <Formik
         initialValues={{
           firstName: data.firstName,
@@ -103,7 +104,7 @@ const UpdateUserPage = () => {
               <SubmitContainer>
                 {/* <Box sx={{ flex: '1 1 auto' }} /> */}
                 <StyledButton variant="outlined" type="submit" disabled={isSubmitting}>
-                  Submit
+                  {t('submit')}
                 </StyledButton>
               </SubmitContainer>
             </StyledBox>
@@ -142,6 +143,6 @@ const StyledButton = styled(Button)`
     padding: 0.5rem 1rem;
   }
   @media screen and (min-width: 48rem) {
-    width: 20%;
+    width: 30%;
   }
 `;

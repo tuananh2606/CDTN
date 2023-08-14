@@ -6,7 +6,6 @@ import { useQuery } from '@tanstack/react-query';
 import orderApis from '../../apis/orderApis';
 
 const OrderSuccess = ({ state }) => {
-  // const { state } = useLocation();
   const { data, isLoading, error } = useQuery({
     queryKey: ['order-details'],
     queryFn: () => orderApis.getOrderById(state !== null && state),

@@ -37,7 +37,7 @@ function applySortFilter(array, comparator, query) {
     return a[1] - b[1];
   });
   if (query) {
-    return filter(array, (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+    return filter(array, (_user) => _user.lastName?.toLowerCase().indexOf(query.toLowerCase()) !== -1);
   }
   return stabilizedThis.map((el) => el[0]);
 }
@@ -55,6 +55,7 @@ const TableComponent = (props) => {
     setPage,
     rowsPerPage,
     setRowsPerPage,
+    setSearch,
   } = props;
 
   const [order, setOrder] = useState('asc');
@@ -102,14 +103,20 @@ const TableComponent = (props) => {
     }
   }, [data]);
 
+  useEffect(() => {
+    if (filterName) {
+      setSearch(filterName);
+    }
+  }, [filterName]);
+
   return (
     <>
-      <Card>
+      <Card sx={{ width: '100%' }}>
         <EnhancedTableToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
 
         {/* <Scrollbar> */}
         {!isLoading ? (
-          <TableContainer sx={{ minWidth: 800 }}>
+          <TableContainer>
             <Table>
               <EnhancedTableHead
                 order={order}

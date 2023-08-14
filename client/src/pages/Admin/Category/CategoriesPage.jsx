@@ -1,6 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -44,6 +45,7 @@ export default function CategoriesPage() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [filteredCategories, setFilteredCategories] = useState();
 
+  const { t } = useTranslation('admin');
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.login.currentUser);
@@ -108,25 +110,25 @@ export default function CategoriesPage() {
   return (
     <>
       <Helmet>
-        <title> Category </title>
+        <title> {t('category')} </title>
       </Helmet>
       <Container>
         <>
           <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
             <Typography variant="h4" gutterBottom>
-              Category
+              {t('category')}
             </Typography>
             <Button
               variant="contained"
               startIcon={<Iconify icon="eva:plus-fill" />}
               onClick={() => navigate('/admin/categories/create')}
             >
-              Create new category
+              {t('new_cate_btn')}
             </Button>
           </Stack>
           <TableComponent
             headCells={headCells}
-            data={data}
+            data={data.categories}
             isLoading={isLoading}
             setFilteredData={setFilteredCategories}
             selected={selected}
@@ -193,12 +195,12 @@ export default function CategoriesPage() {
       >
         <MenuItem onClick={handleEdit}>
           <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-          Edit
+          {t('edit')}
         </MenuItem>
 
         <MenuItem sx={{ color: 'error.main' }} onClick={handleDelete}>
           <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-          Delete
+          {t('delete')}
         </MenuItem>
       </Popover>
     </>

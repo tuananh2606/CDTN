@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { NavLink as RouterLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 // @mui
 import { styled } from '@mui/material/styles';
 import { Box, List, ListItemText, ListItemIcon, ListItemButton } from '@mui/material';
@@ -7,65 +8,66 @@ import { Box, List, ListItemText, ListItemIcon, ListItemButton } from '@mui/mate
 // ----------------------------------------------------------------------
 
 NavSection.propTypes = {
-    data: PropTypes.array,
+  data: PropTypes.array,
 };
 
 export default function NavSection({ data = [], ...other }) {
-    return (
-        <Box {...other}>
-            <List disablePadding sx={{ p: 1 }}>
-                {data.map((item) => (
-                    <NavItem key={item.title} item={item} />
-                ))}
-            </List>
-        </Box>
-    );
+  return (
+    <Box {...other}>
+      <List disablePadding sx={{ p: 1 }}>
+        {data.map((item) => (
+          <NavItem key={item.title} item={item} />
+        ))}
+      </List>
+    </Box>
+  );
 }
 
 // ----------------------------------------------------------------------
 
 NavItem.propTypes = {
-    item: PropTypes.object,
+  item: PropTypes.object,
 };
 
 function NavItem({ item }) {
-    const { title, path, icon, info } = item;
+  const { t } = useTranslation('admin');
+  const { title, path, icon, info } = item;
 
-    return (
-        <StyledNavItem
-            component={RouterLink}
-            to={path}
-            sx={{
-                '&.active': {
-                    color: 'text.primary',
-                    bgcolor: 'action.selected',
-                    fontWeight: 'fontWeightBold',
-                },
-            }}
-        >
-            <StyledNavItemIcon>{icon && icon}</StyledNavItemIcon>
+  return (
+    <StyledNavItem
+      component={RouterLink}
+      to={path}
+      sx={{
+        '&.active': {
+          color: 'text.primary',
+          bgcolor: 'action.selected',
+          fontWeight: 'fontWeightBold',
+        },
+      }}
+    >
+      <StyledNavItemIcon>{icon && icon}</StyledNavItemIcon>
 
-            <ListItemText disableTypography primary={title} />
+      <ListItemText disableTypography primary={t(title)} />
 
-            {info && info}
-        </StyledNavItem>
-    );
+      {info && info}
+    </StyledNavItem>
+  );
 }
 
 const StyledNavItem = styled((props) => <ListItemButton disableGutters {...props} />)(({ theme }) => ({
-    ...theme.typography.body2,
-    height: 48,
-    position: 'relative',
-    textTransform: 'capitalize',
-    color: theme.palette.text.secondary,
-    borderRadius: theme.shape.borderRadius,
+  ...theme.typography.body2,
+  height: 48,
+  position: 'relative',
+  textTransform: 'capitalize',
+  color: theme.palette.text.secondary,
+  borderRadius: theme.shape.borderRadius,
 }));
 
 const StyledNavItemIcon = styled(ListItemIcon)({
-    width: 22,
-    height: 22,
-    color: 'inherit',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+  width: 22,
+  height: 22,
+  color: 'inherit',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
 });

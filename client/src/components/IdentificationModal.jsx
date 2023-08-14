@@ -32,11 +32,17 @@ const IdentificationModal = forwardRef(({ ...props }, ref) => {
           email: values.email,
           password: values.password,
         };
-        await dispatch(loginUser(user)).unwrap();
+        const res = await dispatch(loginUser(user)).unwrap();
 
-        navigate('/user/overview', {
-          state: true,
-        });
+        if (res.admin) {
+          navigate('/admin', {
+            state: true,
+          });
+        } else {
+          navigate('/user/overview', {
+            state: true,
+          });
+        }
       } catch (err) {
         actions.setErrors({ email: err });
       }
@@ -71,6 +77,10 @@ const IdentificationModal = forwardRef(({ ...props }, ref) => {
                     errors.email = t('authentication.err_email_require');
                   } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)) {
                     errors.email = t('authentication.err_email_format');
+                  } else if (!values.password) {
+                    errors.password = t('authentication.err_password_require');
+                  } else if (!/^.{8,19}$/i.test(values.password)) {
+                    errors.password = t('authentication.err_password_format');
                   }
                   return errors;
                 }}
@@ -181,6 +191,7 @@ const TitleSection = styled.h2`
   font-weight: 600;
   font-size: 1.125rem;
   text-transform: uppercase;
+  margin-bottom: 1rem;
 `;
 
 const SectionLoginForm = styled.section`

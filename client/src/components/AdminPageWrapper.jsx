@@ -5,17 +5,19 @@ import { useNavigate } from 'react-router-dom';
 import IconButton from '@mui/material/IconButton';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 
 const AdminPageWrapper = ({ title, children, width }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation('admin');
 
   return (
     <>
       <Helmet>
-        <title>{title}</title>
+        <title>{t(title)}</title>
       </Helmet>
       <Wrapper>
-        <h2>{title}</h2>
+        <h2>{t(title)}</h2>
         <IconButton aria-label="back" size="small" className="back-btn" onClick={() => navigate(-1)}>
           <ArrowBackIosNewIcon fontSize="inherit" />
         </IconButton>

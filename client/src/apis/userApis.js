@@ -13,6 +13,7 @@ const userApis = {
       console.log(error);
     }
   },
+
   changePassword: async (accessToken, data) => {
     try {
       const response = await axios.post(`${BASE_URL}/v1/user/change-password`, data, {

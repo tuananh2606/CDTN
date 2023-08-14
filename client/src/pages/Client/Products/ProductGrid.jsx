@@ -15,21 +15,22 @@ import { ContainerProductList, Card, ProductCardInfo, ProductName, StyledImg, Wr
 const ProductGrid = () => {
   const scrollDirection = useScrollDirection();
   const [slugs, setSlugs] = useState([]);
+  const [filterData, setFilterData] = useState(null);
+
   let { category } = useParams();
   const navigate = useNavigate();
   const size = useWindowSize();
   const { ref, inView } = useInView();
 
-  // const fetchProducts = async (page = 1) => {
-  //   const response = await fetch(`https://api.github.com/search/repositories?q=topic:reactjs&per_page=10&page=${page}`);
-  //   return response.json();
-  // };
+  const fetchProducts = async (page = 1) => {
+    const response = await fetch(`https://api.github.com/search/repositories?q=topic:reactjs&per_page=10&page=${page}`);
+    return response.json();
+  };
 
   const {
     data,
     error,
     isLoading,
-
     isFetchingNextPage,
     isFetchingPreviousPage,
     fetchNextPage,
@@ -42,7 +43,7 @@ const ProductGrid = () => {
     // queryFn: ({ pageParam = 1 }) => fetchProducts(pageParam),
 
     getNextPageParam: (lastPage, pages) => {
-      const maxPages = lastPage?.total_count / 10;
+      const maxPages = lastPage?.total_pages;
       const nextPage = pages.length + 1;
       return nextPage <= maxPages ? nextPage : undefined;
     },
@@ -57,7 +58,7 @@ const ProductGrid = () => {
     queryKey: ['categories'],
     queryFn: () => categoryApis.getAllCategories(),
     onSuccess: (data) => {
-      data.map((item) => {
+      data?.categories.map((item) => {
         setSlugs((prev) => [...prev, item.slug]);
       });
     },
@@ -82,9 +83,11 @@ const ProductGrid = () => {
     return `/${category}/${slug}/${code}`;
   };
 
+  console.log(data);
+
   return (
     <Wrapper>
-      <Filter path={category} direction={scrollDirection.direction} />
+      <Filter path={category} setFilterData={setFilterData} direction={scrollDirection.direction} />
       {/* <h1>Infinite Scroll</h1>
       <ul>
         {data.pages.map((page) =>
@@ -101,13 +104,24 @@ const ProductGrid = () => {
       <StyledImg
         src={
           size.width > 786
-            ? data.pages[0].products[0].category['images'][1]?.url
-            : data.pages[0].products[0].category['images'][0]?.url
+            ? data.pages[0].products[0]?.category['images'][1]?.url
+            : data.pages[0].products[0]?.category['images'][0]?.url
         }
         alt="Anh background category"
       />
       <ContainerProductList>
-        {data &&
+        {filterData && filterData.length > 0 ? (
+          filterData.map((product, idx) => (
+            <Card key={idx}>
+              <Carousel imgs={product.images.slice(0, 3)} autoplay={false} pagination={false} loop isProduct isCustom />
+              <ProductCardInfo>
+                <ProductName>{product.name}</ProductName>
+              </ProductCardInfo>
+              <Link to={link(product.slug, product.code)} className="product-card__url" />
+            </Card>
+          ))
+        ) : filterData === null ? (
+          data &&
           data.pages.length > 0 &&
           data.pages.map((page, idx) =>
             page.products.map((product, idx) => {
@@ -123,25 +137,19 @@ const ProductGrid = () => {
                   />
                   <ProductCardInfo>
                     <ProductName>{product.name}</ProductName>
-                    {/* <Variants>
-                      {product.variation.colors.map((color, idx) => (
-                        <ButtonChangeColor
-                          key={idx}
-                          color={color.color}
-                          onClick={() => handleChangeColor(color.images.slice(0, 3))}
-                        />
-                      ))}
-                    </Variants> */}
                   </ProductCardInfo>
                   <Link to={link(product.slug, product.code)} className="product-card__url" />
                 </Card>
               );
             }),
-          )}
+          )
+        ) : (
+          <div>Không có sản phẩm trong khoảng giá</div>
+        )}
       </ContainerProductList>
-      <div>
+      <div className="load-more">
         <button ref={ref} onClick={() => fetchNextPage()} disabled={!hasNextPage || isFetchingNextPage}>
-          {isFetchingNextPage ? 'Loading more...' : hasNextPage ? 'Load Newer' : 'Nothing more to load'}
+          {isFetchingNextPage ? 'Loading more...' : hasNextPage ? 'Load Newer' : ''}
         </button>
       </div>
     </Wrapper>

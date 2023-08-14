@@ -1,5 +1,4 @@
 import { Helmet } from 'react-helmet-async';
-import { filter } from 'lodash';
 import { useNavigate } from 'react-router-dom';
 import { sentenceCase } from 'change-case';
 import { useState } from 'react';
@@ -7,6 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { loginSuccess } from '../../../redux/authSlice';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createAxios } from '../../../utils/http';
+import { useTranslation } from 'react-i18next';
 
 // @mui
 import {
@@ -48,6 +48,7 @@ export default function ProductsPage() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [deletedProduct, setDeletedProduct] = useState();
   const [filteredProducts, setFilteredProducts] = useState();
+  const { t } = useTranslation('admin');
   const user = useSelector((state) => state.auth.login.currentUser);
   const dispatch = useDispatch();
   let axiosJWT = createAxios(user, dispatch, loginSuccess);
@@ -112,25 +113,25 @@ export default function ProductsPage() {
   return (
     <>
       <Helmet>
-        <title> Product </title>
+        <title> {t('product')} </title>
       </Helmet>
 
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Product
+            {t('product')}
           </Typography>
           <Button
             variant="contained"
             startIcon={<Iconify icon="eva:plus-fill" />}
             onClick={() => navigate('/admin/products/create')}
           >
-            New Product
+            {t('new_product_btn')}
           </Button>
         </Stack>
         <TableComponent
           headCells={headCells}
-          data={data}
+          data={data.products}
           isLoading={isLoading}
           setFilteredData={setFilteredProducts}
           selected={selected}
@@ -184,7 +185,7 @@ export default function ProductsPage() {
                     {images?.map((item) => item.url).join(', ')}
                   </TableCell>
                   {/* <TableCell align="left"></TableCell> */}
-                  <TableCell align="left">{category}</TableCell>
+                  <TableCell align="left">{category.name}</TableCell>
 
                   <TableCell align="left">{price}</TableCell>
 
@@ -222,12 +223,12 @@ export default function ProductsPage() {
       >
         <MenuItem onClick={handleEdit}>
           <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-          Edit
+          {t('edit')}
         </MenuItem>
 
         <MenuItem sx={{ color: 'error.main' }} onClick={handleDelete}>
           <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-          Delete
+          {t('delete')}
         </MenuItem>
       </Popover>
     </>

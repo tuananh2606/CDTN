@@ -1,11 +1,42 @@
 import { useState, useEffect, memo } from 'react';
 import styled from 'styled-components';
 import { IoCloseOutline, IoChevronForward } from 'react-icons/io5';
+import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
+import productApis from '../apis/productApis';
+import { useDebounce } from 'use-debounce';
+import { Box, Button } from '@mui/material';
 
-const Filter = ({ direction, path }) => {
+const _sleep = (ms) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
+const Filter = ({ direction, path, setFilterData }) => {
+  const [valuePrice, setValue] = useState('0-5000000');
+  const [status, setStatus] = useState(false);
   const [filterToggle, setFilterToggle] = useState(false);
   const { t } = useTranslation(['home', 'product']);
+  const [value] = useDebounce(valuePrice, 500);
+
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: ['filter'],
+    queryFn: async () => {
+      await _sleep(1000);
+      const res = await productApis.filterProducts(path, value.split('-'));
+      return res;
+    },
+    refetchOnWindowFocus: false,
+    enabled: status,
+    onSuccess: async (data) => {
+      setFilterData(data);
+    },
+  });
+
   useEffect(() => {
     if (filterToggle === true) {
       if (typeof window != 'undefined' && window.document) {
@@ -16,6 +47,20 @@ const Filter = ({ direction, path }) => {
     }
   }, [filterToggle]);
 
+  const handleChange = (e) => {
+    setValue(e.target.value);
+  };
+
+  const handleClearClick = () => {
+    setFilterToggle(false);
+    setFilterData(null);
+  };
+
+  const handleClick = () => {
+    setFilterToggle(false);
+    setStatus(true);
+    refetch();
+  };
   return (
     <>
       <FilterWrapper>
@@ -34,21 +79,38 @@ const Filter = ({ direction, path }) => {
         <FilterModal filterToggle={filterToggle}>
           <FilterModalTitle>
             <h2>SHOW FILTER</h2>
-            <IoCloseOutline size={32} className="close-btn" onClick={() => setFilterToggle(!filterToggle)} />
+            <button className="close-btn" onClick={() => setFilterToggle(!filterToggle)}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M12.0007 10.5865L16.9504 5.63672L18.3646 7.05093L13.4149 12.0007L18.3646 16.9504L16.9504 18.3646L12.0007 13.4149L7.05093 18.3646L5.63672 16.9504L10.5865 12.0007L5.63672 7.05093L7.05093 5.63672L12.0007 10.5865Z"
+                  fill="black"
+                />
+              </svg>
+            </button>
           </FilterModalTitle>
           <FilterModalContent>
-            <FilterContentItem>
-              <h3>CATEGORIES</h3>
-              <IoChevronForward size={20} />
-            </FilterContentItem>
-            <FilterContentItem>
-              <h3>COLORS</h3>
-              <IoChevronForward size={20} />
-            </FilterContentItem>
-            <FilterContentItem>
-              <h3>SIZES</h3>
-              <IoChevronForward size={20} />
-            </FilterContentItem>
+            <FormControl>
+              <FormLabel id="demo-controlled-radio-buttons-group">Price</FormLabel>
+              <RadioGroup
+                aria-labelledby="demo-controlled-radio-buttons-group"
+                name="controlled-radio-buttons-group"
+                value={valuePrice}
+                onChange={(e) => handleChange(e)}
+              >
+                <FormControlLabel value="0-5000000" control={<Radio />} label="0 - 5000000 đ" />
+                <FormControlLabel value="5000001-10000000" control={<Radio />} label="5000001 - 10000000 đ" />
+                <FormControlLabel value="10000001-15000000" control={<Radio />} label="10000001 - 15000000 đ" />
+                <FormControlLabel value="15000000" control={<Radio />} label="15000000+ đ" />
+              </RadioGroup>
+            </FormControl>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <Button sx={{ mr: 2 }} onClick={handleClearClick}>
+                Clear
+              </Button>
+              <Button variant="contained" onClick={handleClick}>
+                Filter
+              </Button>
+            </Box>
           </FilterModalContent>
         </FilterModal>
       </FilterWrapper>
@@ -61,6 +123,7 @@ export default memo(Filter);
 
 const FilterWrapper = styled.div`
   margin-top: 7rem;
+
   @media only screen and (min-width: 768px) {
     margin-top: 7rem;
   }
@@ -119,19 +182,17 @@ const ButtonFilter = styled.button`
 
 const FilterModal = styled.div`
   position: fixed;
-  inset: 0 0 0 66%;
+  inset: 0 0 0 0;
   background-color: #fff;
   z-index: 999;
   color: #000;
   transform: ${(props) => (props.filterToggle ? 'translateX(0)' : 'translateX(100%)')};
   transition: transform 0.3s cubic-bezier(0.39, 0.575, 0.565, 1);
-  /* @media only screen and (min-width: 64rem) {
-        transform: translate3d(60vw, 0, 0);
-    } */
+
   /*Mobile*/
-  /* @media only screen and (min-width: 48rem) {
-        transform: translate3d(50vw, 0, 0);
-    } */
+  @media only screen and (min-width: 48rem) {
+    inset: 0 0 0 60%;
+  }
 `;
 
 const FilterModalTitle = styled.div`
@@ -143,11 +204,17 @@ const FilterModalTitle = styled.div`
   h2 {
     width: 100%;
     padding: 0 2.5rem;
+    font-size: 20px;
+    @media screen and (min-width: 48rem) {
+      font-size: 22px;
+    }
   }
   .close-btn {
     height: 100%;
     padding: 0 1.5rem;
     box-shadow: -1px 1px #eae8e4;
+    background-color: transparent;
+    border: none;
     /* border-left: 2px solid #eae8e4; */
     cursor: pointer;
     &:hover {
@@ -157,26 +224,11 @@ const FilterModalTitle = styled.div`
 `;
 
 const FilterModalContent = styled.div`
-  display: block;
   height: 100%;
   padding: 3rem 2rem 0;
-`;
-
-const FilterContentItem = styled.div`
   display: flex;
-  margin: auto 0;
-  width: 100%;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 2px solid #eae8e4;
-  span {
-    font-size: 18px;
-  }
-  &:last-child {
-    border: none;
-  }
+  flex-direction: column;
 `;
-
 const BackDrop = styled.div`
   position: fixed;
   width: 100%;

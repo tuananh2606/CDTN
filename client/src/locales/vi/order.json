@@ -1,0 +1,15 @@
+{
+  "placed_on": "Đặt lúc",
+  "order_status": "Trạng thái đơn hàng",
+  "qty": "Sl",
+  "payment": "Phương thức thanh toán",
+  "delivery": "Địa chỉ giao hàng",
+  "adressline1": "Địa chỉ 1",
+  "adressline2": "Địa chỉ 2",
+  "order_summary": "Tóm tắt đơn hàng",
+  "subtotal": "Tạm tính",
+  "delivery_cost": "Phí ship",
+  "tax": "Thuế",
+  "total": "Tổng tiền",
+  "cancel": "Hủy đơn hàng"
+}

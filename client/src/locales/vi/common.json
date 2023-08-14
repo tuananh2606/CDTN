@@ -15,6 +15,15 @@
     "cancle": "Hủy",
     "send": "Gửi",
     "err_email_require": "Vui lòng điền vào trường này.",
-    "err_email_format": "Vui lòng nhập địa chỉ email hợp lệ."
-  }
+    "err_password_require": "Vui lòng điền vào trường này.",
+    "err_email_format": "Vui lòng nhập địa chỉ email hợp lệ.",
+    "err_password_format": "Độ dài tối thiểu từ 8-19 ký tự.",
+    "create_new_acccount": "Tạo tài khoản mới",
+    "registration_info": "Thông tin đăng ký",
+    "back": "Quay lại",
+    "next": "Tiếp tục",
+    "finish": "Đăng ký",
+    "des_register": "Tiếp tục với địa chỉ email của bạn.\nĐăng nhập bằng email và mật khẩu của bạn hoặc tạo một hồ sơ nếu bạn là người mới."
+  },
+  "personal_info": "Thông tin cá nhân"
 }

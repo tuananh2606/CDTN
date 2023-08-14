@@ -16,6 +16,14 @@
     "cancle": "Cancle",
     "send": "Send",
     "err_email_require": "Please fill out this field.",
-    "err_email_format": "Please enter a valid email address"
-  }
+    "err_password_require": "Please fill out this field.",
+    "err_email_format": "Please enter a valid email address",
+    "create_new_acccount": "Create a new account",
+    "registration_info": "Registration Information",
+    "back": "Back",
+    "next": "Next",
+    "finish": "Register",
+    "des_register": "Continue with your email address.\nSign in with your GUCCI email and password or create a profile if you are new."
+  },
+  "personal_info": "Peronal information"
 }

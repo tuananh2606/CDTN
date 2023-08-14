@@ -9,10 +9,16 @@ exports.getAllProducts = async (req, res) => {
     try {
         let page = req.query.page || 1;
         let perPage = parseInt(req.query.limit) || 10;
+
         const products = await Product.find()
-            .skip(perPage * page - perPage) // Trong page đầu tiên sẽ bỏ qua giá trị là 0
-            .limit(perPage);
-        return res.status(200).json(products);
+            .populate({ path: 'category', select: { _id: 1, name: 1 } })
+            .sort({ createdAt: -1 });
+        const totalDocuments = await Product.find().countDocuments();
+
+        // .skip(perPage * page - perPage) // Trong page đầu tiên sẽ bỏ qua giá trị là 0
+        // .limit(perPage);
+        const newProduct = { products: products, count: totalDocuments };
+        return res.status(200).json(newProduct);
     } catch (error) {
         res.status(500).json(error);
     }
@@ -53,7 +59,7 @@ exports.getLatestProducts = async (req, res) => {
 exports.getProductsByCategory = async (req, res, next) => {
     try {
         let page = req.query.page || 1;
-        let perPage = parseInt(req.query.limit) || 10;
+        let perPage = parseInt(req.query.limit) || 4;
         const { _id } = await Category.findOne({ slug: req.query.category });
         const products = await Product.find({ category: _id })
             .populate('category')
@@ -70,7 +76,10 @@ exports.getProductsByCategory = async (req, res, next) => {
 
 //Get product details
 exports.getProductDetails = async (req, res) => {
-    const product = await Product.findOne({ code: req.params.code });
+    const product = await Product.findOne({ code: req.params.code }).populate({
+        path: 'category',
+        select: { _id: 1, slug: 1 },
+    });
     return res.status(200).json({
         success: true,
         product,
@@ -144,6 +153,7 @@ exports.deleteProduct = async (req, res) => {
         return res.status(500).json(error);
     }
 };
+
 exports.searchProducts = async (req, res) => {
     try {
         const searchQuery = req.query.q;
@@ -165,6 +175,33 @@ exports.searchProducts = async (req, res) => {
             .limit(10)
             .sort({ score: { $meta: 'textScore' } });
         res.status(200).json(products);
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+};
+
+exports.filterProducts = async (req, res) => {
+    try {
+        const { gte, lte, category } = req.body;
+        let { _id } = await Category.findOne({ slug: category });
+        if (!_id) {
+            return res.status(404).json({ error: 'Category not found' });
+        }
+        let condition = {};
+        if (_id) {
+            condition.category = _id;
+        }
+        if (gte) {
+            condition.price = {
+                $gte: Number(gte),
+            };
+        }
+        if (lte) {
+            condition.price = { $lte: Number(lte) };
+        }
+        const product = await Product.find(condition);
+
+        return res.status(200).json(product);
     } catch (error) {
         return res.status(500).json(error);
     }

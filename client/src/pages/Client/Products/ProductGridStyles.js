@@ -2,6 +2,16 @@ import styled from 'styled-components';
 
 export const Wrapper = styled.section`
   background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  .load-more {
+    width: 100%;
+    button {
+      position: relative;
+      left: 50%;
+      bottom: 0;
+    }
+  }
 `;
 
 export const ContainerProductList = styled.div`
@@ -41,6 +51,7 @@ export const ProductCardInfo = styled.div`
 `;
 
 export const ProductName = styled.span`
+  text-transform: capitalize;
   font-size: 0.875rem;
 `;
 

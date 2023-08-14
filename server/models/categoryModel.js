@@ -14,7 +14,6 @@ const categorySchema = new mongoose.Schema(
         },
         description: {
             type: String,
-            required: true,
         },
         videos: {
             desktop_tablet: [

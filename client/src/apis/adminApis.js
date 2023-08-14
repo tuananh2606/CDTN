@@ -1,3 +1,6 @@
+import axios from 'axios';
+const BASE_URL = import.meta.env.VITE_BASE_URL;
+
 const adminApis = {
   //Users
   getAllUsers: async (axiosJWT, accessToken) => {
@@ -47,6 +50,18 @@ const adminApis = {
     try {
       const response = await axiosJWT.delete('/v1/user/' + _id, {
         headers: { token: `Bearer ${accessToken}` },
+      });
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  searchUserRegex: async (searchValue) => {
+    try {
+      const response = await axios.get(`${BASE_URL}/v1/user/s`, {
+        params: {
+          q: searchValue,
+        },
       });
       return response.data;
     } catch (error) {

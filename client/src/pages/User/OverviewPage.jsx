@@ -39,7 +39,7 @@ const OverviewPage = () => {
         />
         <UserIndetity>
           <UserFrame>
-            <span>T.N</span>
+            <span>{`${user.firstName.slice(0, 1)}.${user.lastName.slice(0, 1)}`}</span>
           </UserFrame>
           <Name>{`${user.firstName} ${user.lastName}`}</Name>
         </UserIndetity>
@@ -63,7 +63,7 @@ const OverviewPage = () => {
         </div>
       </BoxContainer>
       <LogoutButton>
-        <button onClick={handleLogout}>{t('logout', { ns: 'common' })}</button>
+        <button onClick={handleLogout}>{t('authentication.logout', { ns: 'common' })}</button>
       </LogoutButton>
     </section>
   );

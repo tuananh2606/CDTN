@@ -5,6 +5,8 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import DOMPurify from 'dompurify';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import {
   StyledWrapper,
   StyledCarouselWrapper,
@@ -19,7 +21,6 @@ import {
   StyledDesContainer,
   StyledDes,
 } from './ProductDetailsStyles';
-import { addToWishlist } from '../../../redux/wishlistSlice';
 import { addToCart } from '../../../redux/cartSlice';
 import useWindowSize from '../../../hooks/useWindowSize';
 import Carousel from '../../../components/Carousel';
@@ -29,7 +30,6 @@ import wishlistApis from '../../../apis/wishlistApis';
 const ProductDetails = () => {
   const size = useWindowSize();
   const [description, setDescription] = useState();
-  const [checkWishlist, setCheckWishlist] = useState(false);
   const [producId, setProductId] = useState();
   const [isInWishlist, setIsInWishlist] = useState(false);
   const [productsRecom, setProductsRecom] = useState([]);
@@ -79,6 +79,7 @@ const ProductDetails = () => {
 
   const hanldleBuy = (product) => {
     dispatch(addToCart(product));
+    toast.success('Thêm vào gió hàng thành công!');
   };
 
   const handleAddToWishlist = (product, user) => {
@@ -93,8 +94,22 @@ const ProductDetails = () => {
     });
   };
 
+  console.log(data);
+
   return (
     <>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover={false}
+        theme="light"
+      />
       <StyledWrapper>
         {size.width < 1024 ? (
           <StyledCarouselWrapper>
@@ -136,13 +151,16 @@ const ProductDetails = () => {
                                 </StyledOtherProduct>
                             </div> */}
               <StyledButtonLink
+                disabled={data.product?.stock <= 0}
                 onClick={() =>
                   hanldleBuy({
                     id: data.product?._id,
+                    slug: data.product?.slug,
                     img: data.product?.images[0],
                     name: data.product?.name,
                     code: data.product?.code,
                     price: data.product?.price,
+                    category: data.product?.category['slug'],
                     quantity: 1,
                   })
                 }

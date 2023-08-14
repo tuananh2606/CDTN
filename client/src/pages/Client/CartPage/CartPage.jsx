@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { InputLabel, FormControl, NativeSelect } from '@mui/material';
+import { Link, useNavigate } from 'react-router-dom';
+import { InputLabel, FormControl, NativeSelect, Button } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { VNDFormat } from '../../../utils/formatMoney';
@@ -21,6 +21,7 @@ import {
 
 const CartPage = () => {
   const [hide, setHide] = useState(true);
+  const navigate = useNavigate();
   const cart = useSelector((state) => state.cart.shoppingCart);
   const dispatch = useDispatch();
   const { t } = useTranslation('cart_checkout');
@@ -43,6 +44,10 @@ const CartPage = () => {
     return calculatePriceTotal();
   };
 
+  const link = (item) => {
+    navigate(`/${item.category}/${item.slug}/${item.code}`);
+  };
+
   useEffect(() => {
     if (cart.length > 0) {
       setHide(false);
@@ -63,7 +68,7 @@ const CartPage = () => {
                 return (
                   <li key={idx}>
                     <CartItem>
-                      <img src={item.img.url} alt="Anh" />
+                      <img src={item.img.url} alt="Anh" onClick={() => link(item)} />
                       <CartItemContent>
                         <CartItemInfo>
                           <h3>{item.name}</h3>
@@ -102,7 +107,9 @@ const CartPage = () => {
                       </CartItemContent>
                     </CartItem>
                     <div>
-                      <button onClick={() => handleRemove(item.id)}>{t('remove')}</button>
+                      <Button variant="standard" onClick={() => handleRemove(item.id)}>
+                        {t('remove')}
+                      </Button>
                     </div>
                   </li>
                 );

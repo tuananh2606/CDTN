@@ -20,7 +20,4 @@ export default [
     firstName: Yup.string().required('First name is required').min(2, 'Must be 4 characters or more'),
     lastName: Yup.string().required('Last name is required').min(2, 'Must be 4 characters or more'),
   }),
-  Yup.object().shape({
-    acticationCode: Yup.string().required('Actication code is required').length(6, 'Must be 6 characters'),
-  }),
 ];

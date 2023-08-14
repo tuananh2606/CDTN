@@ -1,5 +1,6 @@
 {
   "filter": "Filter",
   "btnAddToSC": "Add to shopping cart",
-  "product_details": "Product Details"
+  "product_details": "Product Details",
+  "product_recommendation": "Product Recommendation"
 }

@@ -25,13 +25,28 @@ const Header = styled.header`
   height: 4.5rem;
   box-shadow: inset 0 -1px 0 var(--border-color);
   justify-content: space-between;
+  align-items: center;
+  .menu-btn {
+    height: 100%;
+    text-transform: uppercase;
+    font-weight: 400;
+    padding: 0.5rem 1.5rem;
+    flex: 1;
+    justify-content: flex-end;
+
+    @media screen and (min-width: 64rem) {
+      display: none;
+    }
+  }
 
   .logo {
     height: 100%;
     color: #000;
-    /* padding-left: 3.3333333333333335vw;
-    padding-right: 3.3333333333333335vw; */
+    flex: 1;
+    padding-left: 3.3333333333333335vw;
+    padding-right: 3.3333333333333335vw;
     @media only screen and (min-width: 48em) {
+      flex: 1;
       padding-right: 1.5rem;
       padding-left: 3.125vw;
     }

@@ -7,7 +7,6 @@ import authApis from '../../../apis/authApis';
 
 import {
   Wrapper,
-  RootSection,
   RegistrationSection,
   LoginSection,
   LoginForm,
@@ -23,6 +22,7 @@ import { loginUser } from '../../../redux/apiRequest';
 const LoginPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   let location = useLocation();
   const { t } = useTranslation();
 
@@ -37,8 +37,13 @@ const LoginPage = () => {
           email: values.email,
           password: values.password,
         };
-        await dispatch(loginUser(user)).unwrap();
-        navigate(location.state.prevUrl);
+        const res = await dispatch(loginUser(user)).unwrap();
+
+        if (res.admin) {
+          navigate('/admin');
+        } else {
+          navigate(location.state.prevUrl);
+        }
       } catch (err) {
         setErrors({ email: err });
       }
@@ -55,7 +60,7 @@ const LoginPage = () => {
   return (
     <Wrapper>
       <LoginSection>
-        <h1>IDENTIFICATION</h1>
+        <h1>{t('authentication.identification')}</h1>
         <LoginForm>
           <TitleSection>{t('authentication.exist_account')}</TitleSection>
           <Formik
@@ -66,7 +71,12 @@ const LoginPage = () => {
                 errors.email = t('authentication.err_email_require');
               } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)) {
                 errors.email = t('authentication.err_email_format');
+              } else if (!values.password) {
+                errors.password = t('authentication.err_password_require');
+              } else if (!/^.{8,19}$/i.test(values.password)) {
+                errors.password = t('authentication.err_password_format');
               }
+
               return errors;
             }}
             onSubmit={_handleSubmit}
@@ -107,9 +117,9 @@ const LoginPage = () => {
       <RegistrationSection>
         <PageTitle>{t('authentication.new_user')}</PageTitle>
         <p>{t('authentication.description_identification')}</p>
-        <StyledButton>
-          <Link to="/registration">{t('authentication.register')}</Link>
-        </StyledButton>
+        <Link to="/registration">
+          <StyledButton>{t('authentication.register')}</StyledButton>
+        </Link>
       </RegistrationSection>
     </Wrapper>
   );

@@ -5,9 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { GoogleLogin, useGoogleLogin } from '@react-oauth/google';
 import { loginSuccess } from '../../../redux/authSlice';
-
-const BASE_URL = import.meta.env.VITE_BASE_URL;
-
+import { useTranslation } from 'react-i18next';
 import {
   Wrapper,
   RegistrationSection,
@@ -25,7 +23,7 @@ import { registerUser } from '../../../redux/apiRequest';
 import axios from 'axios';
 import authApis from '../../../apis/authApis';
 
-const steps = ['Registration Information', 'Registration Information', 'ACCOUNT ACTIVATION'];
+const steps = ['Registration Information', 'Registration Information'];
 
 function _renderStepContent(step) {
   switch (step) {
@@ -33,21 +31,6 @@ function _renderStepContent(step) {
       return <SignUpInfoForm1 />;
     case 1:
       return <SignUpInfoForm2 />;
-    case 2:
-      return <AccountActivationForm />;
-    default:
-      return <div>Not Found</div>;
-  }
-}
-
-function _renderStep(step) {
-  switch (step) {
-    case 0:
-      return <StyledStepLabel>Registration Information</StyledStepLabel>;
-    case 1:
-      return <StyledStepLabel>Registration Information</StyledStepLabel>;
-    case 2:
-      return <StyledStepLabel>Account Activation</StyledStepLabel>;
     default:
       return <div>Not Found</div>;
   }
@@ -58,9 +41,21 @@ const Registration = () => {
   const currentValidationSchema = validationSchema[activeStep];
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const totalSteps = () => {
     return steps.length;
+  };
+
+  const _renderStep = (step) => {
+    switch (step) {
+      case 0:
+        return <StyledStepLabel>{t('authentication.registration_info')}</StyledStepLabel>;
+      case 1:
+        return <StyledStepLabel>{t('authentication.registration_info')}</StyledStepLabel>;
+      default:
+        return <div>Not Found</div>;
+    }
   };
 
   const isLastStep = activeStep === steps.length - 1;
@@ -88,11 +83,11 @@ const Registration = () => {
       let response = await authApis.checkEmail({ email: values.email });
       if (response.status === 200) {
         setActiveStep(activeStep + 1);
+        actions.setTouched({});
       } else {
         actions.setErrors({ email: response.data });
       }
-      //   console.log(response);
-      actions.setTouched({});
+
       actions.setSubmitting(false);
     } else {
       setActiveStep(activeStep + 1);
@@ -121,7 +116,7 @@ const Registration = () => {
     <Wrapper>
       <RegistrationSection>
         <RegistrationWrapper>
-          <PageTitle>CREATE A NEW ACCOUNT</PageTitle>
+          <PageTitle>{t('authentication.create_new_acccount')}</PageTitle>
           <RegistrationForm>
             <FormLabel>
               {_renderStep(activeStep)}
@@ -134,7 +129,6 @@ const Registration = () => {
                 email: '',
                 password: '',
                 confirmedPassword: '',
-                acticationCode: '',
               }}
               validationSchema={currentValidationSchema}
               onSubmit={_handleSubmit}
@@ -150,11 +144,11 @@ const Registration = () => {
                     }}
                   >
                     <Button color="inherit" disabled={activeStep === 0} onClick={handleBack} sx={{ mr: 1 }}>
-                      Back
+                      {t('authentication.back')}
                     </Button>
                     <Box sx={{ flex: '1 1 auto' }} />
                     <StyledButton disabled={isSubmitting} type="submit" sx={{ mr: 1 }}>
-                      {isLastStep ? 'Finish' : 'Next'}
+                      {isLastStep ? t('authentication.finish') : t('authentication.next')}
                     </StyledButton>
                   </Box>
                 </Form>
@@ -164,6 +158,8 @@ const Registration = () => {
         </RegistrationWrapper>
         <SocialWrapper>
           <h2>My Account</h2>
+          <span>OR</span>
+          <p>{t('authentication.des_register')}</p>
           {/* <GoogleLogin
                         onSuccess={(credentialResponse) => {
                             console.log(credentialResponse);
@@ -173,9 +169,6 @@ const Registration = () => {
                         }}
                     /> */}
           {/* <MyCustomButton onClick={() => googleLogin()}>Sign in with Google 🚀 </MyCustomButton> */}
-          <span>OR</span>
-          <span>Continue with your email address</span>
-          <span>Sign in with your GUCCI email and password or create a profile if you are new.</span>
         </SocialWrapper>
       </RegistrationSection>
     </Wrapper>

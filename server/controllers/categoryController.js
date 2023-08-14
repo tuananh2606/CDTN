@@ -1,5 +1,6 @@
 const slugify = require('slugify');
 const Category = require('../models/categoryModel');
+const Product = require('../models/productModel');
 const cloudinary = require('../cloudinary');
 const fs = require('fs');
 // ADMIN DASHBOARD
@@ -45,8 +46,10 @@ exports.uploadMedia = async (req, res) => {
 // Get All Categories
 exports.getAllCategories = async (req, res) => {
     try {
-        const categories = await Category.find();
-        res.status(200).json(categories);
+        const categories = await Category.find().sort({ createdAt: -1 });
+        const totalDocuments = await Category.find().countDocuments();
+        const newCategories = { categories: categories, count: totalDocuments };
+        return res.status(200).json(newCategories);
     } catch (error) {
         res.status(500).json(error);
     }
@@ -73,6 +76,10 @@ exports.getCategoryById = async (req, res) => {
 //Create category
 exports.createCategory = async (req, res) => {
     try {
+        const categories = Category.find({ slug: slugify(req.body.name) });
+        if (categories) {
+            return res.status(409).json('Conflict');
+        }
         const categoryObj = {
             name: req.body.name,
             slug: slugify(req.body.name),
@@ -105,8 +112,8 @@ exports.updateCategory = async (req, res) => {
 
 exports.deleteCategory = async (req, res) => {
     try {
-        const count = await Category.estimatedDocumentCount();
-        if (count > 0) {
+        const count = await Product.find({ category: req.params.id });
+        if (count.length > 0) {
             return res.status(409).send(`Don't do that`);
         }
         await cloudinary.deleteFolder(`Videos/${req.body.name}`, { resource_type: 'video' });

@@ -1,24 +1,40 @@
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 import styled from 'styled-components';
-import { NavLink, useLocation } from 'react-router-dom';
+import { Button, Backdrop } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 
 import { NavItem } from '../components/common';
 import HeaderOnly from './Header/HeaderOnly';
 import FooterOnly from './Footer/FooterOnly';
 
 const UserPageLayout = ({ children }) => {
+  const [show, setShow] = useState(false);
+
+  console.log(show);
+
   return (
     <Layout>
       <HeaderOnly>
+        <Button
+          variant="standard"
+          endIcon={show ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          onClick={() => setShow(!show)}
+          className="menu-btn"
+        >
+          Menu
+        </Button>
         <NavContainer>
-          <ul className="nav-list">
-            <NavItem to="/user/overview" title="overview" />
-            <NavItem to="/user/profile" title="my_account" />
-            <NavItem to="/user/orders" title="my_orders" />
-            <NavItem to="/user/wishlist" title="my_wishlist" />
-          </ul>
+          <StyledUl show={show} className="nav-list">
+            <NavItem setShow={setShow} to="/user/overview" title="overview" />
+            <NavItem setShow={setShow} to="/user/profile" title="my_account" />
+            <NavItem setShow={setShow} to="/user/orders" title="my_orders" />
+            <NavItem osetShow={setShow} to="/user/wishlist" title="my_wishlist" />
+          </StyledUl>
         </NavContainer>
       </HeaderOnly>
+      {show && <Backdrop sx={{ color: '#fff', zIndex: 99 }} open={show} onClick={() => setShow(false)} />}
       <main className="content">{children}</main>
       <FooterOnly />
     </Layout>
@@ -43,25 +59,23 @@ const Layout = styled.div`
 `;
 
 const NavContainer = styled.nav`
-  .nav-list {
-    height: 100%;
-    list-style: none;
-    display: flex;
-  }
+  height: 100%;
 `;
 
-// const NavItem = styled.li`
-//     height: 100%;
-//     padding: 1rem 1.5rem;
-//     border-left: 1px solid var(--border-color);
-//     display: flex;
-//     align-items: center;
-//     a {
-//         text-decoration: none;
-//         color: #000;
-//     }
-//     .active {
-//         color: #000;
-//         box-shadow: inset 0 -4px 0 0 #19110b;
-//     }
-// `;
+const StyledUl = styled.ul`
+  height: 100%;
+  list-style: none;
+  display: ${(props) => (props.show ? 'block' : 'none')};
+  @media screen and (min-width: 64rem) {
+    display: flex;
+  }
+  @media only screen and (max-width: 63.9375em) {
+    background-color: #fff;
+    height: auto;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    z-index: 1;
+  }
+`;

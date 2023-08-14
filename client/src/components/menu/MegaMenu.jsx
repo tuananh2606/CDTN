@@ -1,26 +1,39 @@
 import styled from 'styled-components';
-import { useImperativeHandle, memo } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { memo } from 'react';
 import { useState, forwardRef } from 'react';
-import { IoCloseOutline, IoChevronForward } from 'react-icons/io5';
-import { useQuery, QueryClient } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
+import { IoChevronForward } from 'react-icons/io5';
+import { useQuery } from '@tanstack/react-query';
+
 import { useTranslation } from 'react-i18next';
+import { Link, useNavigate } from 'react-router-dom';
 
 import useWindowSize from '../../hooks/useWindowSize';
 import categoryApis from '../../apis/categoryApis';
 import LevelMenu from './LevelMenu';
 
+import { createAxios } from '../../utils/http';
+import { logoutSuccess } from '../../redux/authSlice';
+import { logoutUser } from '../../redux/apiRequest';
+
 const MegaMenu = ({ navToggle, setNavToggle }, ref) => {
   // useImperativeHandle(ref, () => ({
   //     resetMenu,
   // }));
-
   const size = useWindowSize();
   const { t } = useTranslation('home');
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { data, isLoading, error } = useQuery({
     queryKey: ['categories'],
     queryFn: () => categoryApis.getAllCategories(),
   });
+  const user = useSelector((state) => state.auth.login.currentUser);
+  let axiosJWT = createAxios(user, dispatch, logoutSuccess);
+  const handleLogout = () => {
+    setNavToggle(false);
+    logoutUser(dispatch, user?.accessToken, navigate, axiosJWT);
+  };
 
   const MENU_ITEMS = [
     {
@@ -64,7 +77,7 @@ const MegaMenu = ({ navToggle, setNavToggle }, ref) => {
       <NavigationWrapper navToggle={navToggle} ref={ref}>
         {history.length > 1 && <LevelMenu title={current.title} onBack={handleBack} />}
         <ul>
-          {data?.map((item, idx) => {
+          {data?.categories.map((item, idx) => {
             const isParent = !!item.children;
             return (
               <NavItem key={idx}>
@@ -83,10 +96,7 @@ const MegaMenu = ({ navToggle, setNavToggle }, ref) => {
                                         <span>{item?.name}</span>
                                     )} */}
                   <Link to={'/' + item.slug} className="menu-nav__link" onClick={resetMenu}>
-                    <span>
-                      {t(item.slug, { ns: 'home' })}
-                      {/* {t(item.slug)} */}
-                    </span>
+                    <span style={{ textTransform: 'capitalize' }}>{t(item.slug, { ns: 'home' })}</span>
                   </Link>
 
                   <IoChevronForward className="btn-direct-link" />
@@ -107,9 +117,13 @@ const MegaMenu = ({ navToggle, setNavToggle }, ref) => {
         </ul>
         {size.width < 768 && (
           <MegaMenuContent>
-            <li>Wishlist</li>
-            <li>User</li>
-            <li>Log out</li>
+            <li>
+              <Link to="/user/wishlist">{t('wishlist')}</Link>
+            </li>
+            <li>
+              <Link to="user/overview">{t('user')}</Link>
+            </li>
+            <li onClick={handleLogout}>{t('authentication.logout', { ns: 'common' })}</li>
           </MegaMenuContent>
         )}
       </NavigationWrapper>
@@ -224,6 +238,10 @@ const MegaMenuContent = styled.ul`
     font-size: 1rem;
     margin: 0.5rem 0;
     padding: 0 var(--header-padding-x);
+    a {
+      text-decoration: none;
+      color: #000;
+    }
   }
 `;
 
